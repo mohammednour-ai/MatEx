@@ -15,9 +15,10 @@ Quick options:
      .\scripts\import_tasks.ps1 -Owner "<owner>" -Repo "<repo>"
 
 After issues are created:
-- Use GitHub Projects (beta) to create a project board. You can filter and bulk-add issues to the project.
-- Columns: Backlog, Selected, In Progress, Review, Done.
-- Use labels like `Phase-1`, `T023` for quick filtering.
+
+Branding & Logo
+The repository includes `matex_logo.png` at the project root. See `docs/LOGO.md` for usage guidance and `public/logo_preview.html` for a quick preview.
+
 
 Notes:
 - The CSV parser is minimal and assumes no complex quoted newlines. If your CSV contains newlines in fields, pre-process it first.

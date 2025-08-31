@@ -1,0 +1,12 @@
+{
+  "name": "matex",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "check:logo": "node ./scripts/check_logo_exists.js",
+    "generate:logos": "node ./scripts/generate_logos_sharp.js"
+  },
+  "dependencies": {
+    "sharp": "^0.32.5"
+  }
+}
