@@ -8,6 +8,10 @@ import {
   isInSoftClose,
   calculateSoftCloseExtension
 } from '@/lib/auction-helpers';
+import { 
+  sendOutbidNotification,
+  sendNewBidNotification 
+} from '@/lib/notification-helpers';
 
 interface BidRequest {
   amount_cad: number;
@@ -192,6 +196,65 @@ export async function POST(
     const updatedAuctionState = updatedAuction 
       ? computeAuctionState(updatedAuction, settings)
       : auctionState;
+
+    // Send notifications asynchronously (don't block the response)
+    // This runs in the background and won't affect the bid response time
+    setImmediate(async () => {
+      try {
+        // Get listing details for notifications
+        const { data: listingData } = await supabaseServer
+          .from('listings')
+          .select('id, title, seller_id')
+          .eq('id', auction.listing_id)
+          .single();
+
+        // Get bidder details for seller notification
+        const { data: bidderData } = await supabaseServer
+          .from('profiles')
+          .select('full_name')
+          .eq('id', userId)
+          .single();
+
+        const auctionTitle = listingData?.title || 'Auction Item';
+        const bidderName = bidderData?.full_name || 'Anonymous Bidder';
+
+        // Send outbid notification to previous highest bidder
+        const outbidResult = await sendOutbidNotification(
+          auctionId,
+          bidData.amount_cad,
+          userId,
+          auctionTitle,
+          listingData?.id
+        );
+
+        if (outbidResult.success && outbidResult.notificationSent) {
+          console.log('Outbid notification sent successfully');
+        } else if (!outbidResult.success) {
+          console.error('Failed to send outbid notification:', outbidResult.error);
+        }
+
+        // Send new bid notification to seller
+        if (listingData?.seller_id && listingData.seller_id !== userId) {
+          const sellerNotificationResult = await sendNewBidNotification(
+            auctionId,
+            listingData.seller_id,
+            bidData.amount_cad,
+            bidderName,
+            auctionTitle,
+            listingData.id
+          );
+
+          if (sellerNotificationResult.success) {
+            console.log('New bid notification sent to seller successfully');
+          } else {
+            console.error('Failed to send new bid notification to seller:', sellerNotificationResult.error);
+          }
+        }
+      } catch (notificationError) {
+        console.error('Error sending notifications:', notificationError);
+        // Don't fail the bid if notifications fail
+      }
+    });
 
     // Return successful response
     return NextResponse.json({
