@@ -1,0 +1,66 @@
+name: Import MatEx tasks as Issues
+
+on:
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  import_tasks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Create issues from CSV
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const fs = require('fs');
+            const path = 'matex_full_task_list.csv';
+            if (!fs.existsSync(path)) {
+              core.setFailed(`CSV not found at ${path}`);
+              return;
+            }
+
+            // Very small CSV parser: assumes simple comma-separated values and no multiline fields.
+            const raw = fs.readFileSync(path, 'utf8').split(/\r?\n/).filter(Boolean);
+            const header = raw.shift().split(/,(?=(?:[^"]*"[^"]*")*[^"]*$)/).map(h => h.trim());
+
+            for (const line of raw) {
+              const cols = line.split(/,(?=(?:[^"]*"[^"]*")*[^"]*$)/).map(c => c.trim().replace(/^"|"$/g, ''));
+              const row = {};
+              header.forEach((h, i) => row[h] = cols[i] || '');
+
+              const taskId = row.TaskID || row.Task || '';
+              const titleText = (row.Title || row.Title) || 'Untitled task';
+              const title = `${taskId} - ${titleText}`;
+
+              const bodyParts = [];
+              if (row.Phase) bodyParts.push(`**Phase:** ${row.Phase}`);
+              if (row.Branch) bodyParts.push(`**Suggested branch:** ${row.Branch}`);
+              if (row.Commit) bodyParts.push(`**Suggested commit message:** ${row.Commit}`);
+              if (row.CopilotPrompt) bodyParts.push(`**CopilotPrompt:**\n\n${row.CopilotPrompt}`);
+
+              const body = bodyParts.join('\n\n') + '\n\n---\nImported from `matex_full_task_list.csv`.';
+
+              const labels = [];
+              if (row.Phase) labels.push(row.Phase.replace(/\s+/g, '-'));
+              if (taskId) labels.push(taskId);
+
+              try {
+                const issue = await github.rest.issues.create({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  title,
+                  body,
+                  labels,
+                });
+                console.log(`Created issue #${issue.data.number}: ${title}`);
+              } catch (err) {
+                console.log('Failed to create issue for line:', line);
+                console.log(err);
+              }
+            }
