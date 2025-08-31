@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseServer } from '@/lib/supabaseServer';
+import { z } from 'zod';
+import { allowRequest, getRateLimitStatus } from '@/lib/rateLimiter';
+import { hasUserAcceptedCurrentTerms } from '@/lib/terms';
+import { isDepositAuthorizedForAuction } from '@/lib/deposit-helpers';
 import { 
   getAuctionWithBids, 
   getAuctionSettings, 
@@ -45,25 +49,26 @@ export async function POST(
 ): Promise<NextResponse<BidResponse>> {
   try {
     const auctionId = params.id;
-    
-    // Parse request body
-    let bidData: BidRequest;
-    try {
-      bidData = await request.json();
-    } catch (error) {
-      return NextResponse.json(
-        { success: false, error: 'Invalid JSON in request body' },
-        { status: 400 }
-      );
+    // Rate limit per IP
+    const ip = request.headers.get('x-forwarded-for') || 'unknown';
+    if (!allowRequest(`bid_post:${ip}`, 10, 60_000)) {
+      const status = getRateLimitStatus(`bid_post:${ip}`, 10, 60_000);
+      return NextResponse.json({ success: false, error: 'Rate limit exceeded', retry_after_ms: status.reset - Date.now() }, { status: 429 });
     }
 
-    // Validate bid amount
-    if (!bidData.amount_cad || typeof bidData.amount_cad !== 'number' || bidData.amount_cad <= 0) {
-      return NextResponse.json(
-        { success: false, error: 'Valid bid amount is required' },
-        { status: 400 }
-      );
+    // Validate request body with Zod
+    const BidSchema = z.object({ amount_cad: z.number().positive() });
+    const raw = await request.json().catch(() => null);
+    const parsed = BidSchema.safeParse(raw);
+    if (!parsed.success) {
+      const flat = parsed.error.flatten();
+      const msg = [
+        ...(flat.formErrors || []),
+        ...Object.values(flat.fieldErrors || {}).flatMap(v => v || [])
+      ].join('; ');
+      return NextResponse.json({ success: false, error: 'Bad Request', message: msg || 'Invalid request' }, { status: 400 });
     }
+    const bidData = parsed.data as BidRequest;
 
     // Get user from headers (set by middleware)
     const userId = request.headers.get('x-user-id');
@@ -76,6 +81,12 @@ export async function POST(
         { success: false, error: 'Authentication required' },
         { status: 401 }
       );
+    }
+
+    // Terms acceptance check
+    const hasAccepted = await hasUserAcceptedCurrentTerms(userId);
+    if (!hasAccepted) {
+      return NextResponse.json({ success: false, error: 'Terms acceptance required', message: 'Please accept the latest Terms & Conditions before bidding' }, { status: 403 });
     }
 
     // Check user permissions
@@ -140,12 +151,12 @@ export async function POST(
       );
     }
 
-    // TODO: Check deposit authorization when deposit system is implemented (T035)
-    // For now, we'll skip deposit validation as it's not yet implemented
+    // Deposit authorization guard
     if (settings.deposit_required) {
-      // This will be implemented in T035 - Authorize deposit
-      // For now, we'll log a warning and continue
-      console.warn('Deposit validation skipped - will be implemented in T035');
+      const authorized = await isDepositAuthorizedForAuction(userId, auctionId);
+      if (!authorized) {
+        return NextResponse.json({ success: false, error: 'Deposit required', message: 'Deposit authorization required before bidding' }, { status: 403 });
+      }
     }
 
     // Check if auction is in soft close period
@@ -154,7 +165,7 @@ export async function POST(
     let newEndTime: string | undefined;
 
     // Start database transaction for bid insertion and potential soft close extension
-    const { data: insertedBid, error: bidError } = await supabaseServer
+  const { data: insertedBid, error: bidError } = await supabaseServer
       .from('bids')
       .insert({
         auction_id: auctionId,
@@ -164,7 +175,7 @@ export async function POST(
       .select('id, amount_cad, created_at')
       .single();
 
-    if (bidError) {
+  if (bidError) {
       console.error('Error inserting bid:', bidError);
       return NextResponse.json(
         { success: false, error: 'Failed to place bid' },

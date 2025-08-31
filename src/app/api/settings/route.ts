@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseServer } from '@/lib/supabaseServer';
+import { z } from 'zod';
+import { allowRequest, getRateLimitStatus } from '@/lib/rateLimiter';
 
 // In-memory cache for settings with 3-minute TTL
 interface CacheEntry {
@@ -19,7 +21,7 @@ interface AppSetting {
 // Define update setting type
 interface UpdateSetting {
   key: string;
-  value: any;
+  value?: any;
   description?: string;
   category?: string;
   is_public?: boolean;
@@ -175,6 +177,19 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+  // Basic rate limiting per IP - prefer X-Forwarded-For
+  const forwarded = request.headers.get('x-forwarded-for');
+  const ip = forwarded ? forwarded.split(',')[0].trim() : 'unknown';
+    if (!allowRequest(`settings_post:${ip}`, 5, 60_000)) {
+      const status = getRateLimitStatus(`settings_post:${ip}`, 5, 60_000);
+      return NextResponse.json({ success: false, error: 'Rate limit exceeded', retry_after_ms: status.reset - Date.now() }, { status: 429 });
+    }
+
+    // Validate body with Zod
+    const SettingsPostSchema = z.object({
+      settings: z.array(z.object({ key: z.string().min(1), value: z.any(), description: z.string().optional(), category: z.string().optional(), is_public: z.boolean().optional() })).min(1)
+    });
+
     // Check authentication
     const userId = await getUserFromAuth(request);
     if (!userId) {
@@ -203,47 +218,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Parse request body
-    const body = await request.json();
-    const { settings } = body;
-
-    if (!settings || !Array.isArray(settings) || settings.length === 0) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: 'Bad Request',
-          message: 'Settings array is required and must not be empty',
-          timestamp: new Date().toISOString(),
-        },
-        { status: 400 }
-      );
+    // Parse & validate request body
+    const raw = await request.json();
+    const parsed = SettingsPostSchema.safeParse(raw);
+    if (!parsed.success) {
+      return NextResponse.json({ success: false, error: 'Bad Request', message: parsed.error.flatten() }, { status: 400 });
     }
-
-    // Validate settings format
-    for (const setting of settings) {
-      if (!setting.key || typeof setting.key !== 'string') {
-        return NextResponse.json(
-          {
-            success: false,
-            error: 'Bad Request',
-            message: 'Each setting must have a valid key',
-            timestamp: new Date().toISOString(),
-          },
-          { status: 400 }
-        );
-      }
-      if (setting.value === undefined) {
-        return NextResponse.json(
-          {
-            success: false,
-            error: 'Bad Request',
-            message: `Setting ${setting.key} must have a value`,
-            timestamp: new Date().toISOString(),
-          },
-          { status: 400 }
-        );
-      }
-    }
+    const { settings } = parsed.data;
 
     // Prepare upsert operations
     const upsertPromises = settings.map((setting: UpdateSetting) => {
@@ -263,10 +244,10 @@ export async function POST(request: NextRequest) {
     });
 
     // Execute all upserts atomically
-    const results = await Promise.all(upsertPromises);
+    const results = await Promise.all(upsertPromises) as Array<{ data: any; error: { message?: string } | null }>;
 
     // Check for errors
-    const errors = results.filter(result => result.error);
+    const errors = results.filter(r => r.error);
     if (errors.length > 0) {
       console.error('Settings upsert errors:', errors);
       return NextResponse.json(
@@ -274,7 +255,7 @@ export async function POST(request: NextRequest) {
           success: false,
           error: 'Database Error',
           message: 'Failed to update some settings',
-          details: errors.map(e => e.error?.message),
+          details: errors.map(e => e.error?.message).filter(Boolean),
           timestamp: new Date().toISOString(),
         },
         { status: 500 }

@@ -32,7 +32,7 @@ export default function SearchBar({
   
   const inputRef = useRef<HTMLInputElement>(null);
   const suggestionsRef = useRef<HTMLDivElement>(null);
-  const debounceRef = useRef<NodeJS.Timeout>();
+  const debounceRef = useRef<NodeJS.Timeout | null>(null);
 
   // Fetch suggestions from API
   const fetchSuggestions = async (searchQuery: string) => {

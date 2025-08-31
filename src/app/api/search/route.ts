@@ -136,18 +136,17 @@ export async function GET(request: NextRequest) {
 
     // Log search query for analytics (async, don't wait)
     if (query.trim()) {
-      supabase
-        .rpc('log_search_query', {
-          query_text: query.trim(),
-          user_id: user?.id || null,
-          results_count: results.length
-        })
-        .then(() => {
-          // Search logged successfully
-        })
-        .catch((error) => {
-          console.error('Failed to log search query:', error);
-        });
+      (async () => {
+        try {
+          await supabase.rpc('log_search_query', {
+            query_text: query.trim(),
+            user_id: user?.id || null,
+            results_count: results.length
+          });
+        } catch (err) {
+          console.error('Failed to log search query:', err);
+        }
+      })();
     }
 
     return NextResponse.json({
@@ -309,18 +308,17 @@ export async function POST(request: NextRequest) {
 
     // Log search query for analytics (async, don't wait)
     if (query.trim()) {
-      supabase
-        .rpc('log_search_query', {
-          query_text: `${query.trim()} [filtered]`,
-          user_id: user?.id || null,
-          results_count: results?.length || 0
-        })
-        .then(() => {
-          // Search logged successfully
-        })
-        .catch((error) => {
-          console.error('Failed to log search query:', error);
-        });
+      (async () => {
+        try {
+          await supabase.rpc('log_search_query', {
+            query_text: `${query.trim()} [filtered]`,
+            user_id: user?.id || null,
+            results_count: results?.length || 0
+          });
+        } catch (err) {
+          console.error('Failed to log search query:', err);
+        }
+      })();
     }
 
     return NextResponse.json({
