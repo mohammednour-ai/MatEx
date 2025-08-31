@@ -1,110 +1,742 @@
-# MATEX-MAIN-DEV
+-# MATEX-MAIN-DEV
 
-This file is a developer-oriented, sequential task list derived from `matex_full_task_list.csv` and organized to follow `project_rules.md` requirements.
+Overview:
+- Single linear task list derived from `matex_full_task_list.csv`.
+- Follow `project_rules.md`: one task at a time, document changes, use branches per task.
+- Use Supabase for DB, Next.js 14 + TypeScript for App Router, TailwindCSS for styling.
 
-Assumptions
-- Default Status: `todo` (not started) unless noted.
-- Default Test Status: `Not started`.
-- Start Date / Completion Date left blank for you to fill when work begins/ends.
-- Authentication/Keys Locator indicates where secrets or settings are expected (ENV = `.env` / Vercel env; DB = `app_settings` table in Supabase).
+Rules (summary from `project_rules.md`):
+- No hallucinations: only use the stack defined in `project_rules.md`.
+- One task at a time: strictly follow the CSV order.
+- Documentation first: for each task, list files changed, DB changes, API endpoints, and tests.
 
-Instructions
-- Work one task at a time in the CSV order. Create a feature branch for each task (e.g., `feat/...`, `db/...`, `chore/...`).
-- After completing a task, update the `Status`, `Start Date`, `Completion Date`, and `Test Status` in this file and commit the change.
-
-Legend of columns:
-- TaskID: task identifier from CSV
-- Title: short title
-- Branch: suggested branch name
-- Status: todo / in-progress / done / blocked
-- Start Date / Completion Date: ISO dates (YYYY-MM-DD)
-- Test Status: Not started / Manual pass / Unit tests / Failing / Needs review
-- Description: short description / notes
-- Modules/Apps/Uses: code areas impacted
-- Authentication/Keys Locator: where credentials or settings are stored/accessed
+References:
+- Source task list: `matex_full_task_list.csv`
+- Rules: `project_rules.md`
 
 ---
 
-## Sequential Tasks (Phase order preserved)
+Phase: 0 — Pre-flight
 
-| # | TaskID | Title | Branch | Status | Start Date | Completion Date | Test Status | Description | Modules / Apps / Uses | Auth / Keys Locator |
-|---:|---|---|---|---|---|---|---|---|---|---|
-| 1 | T001 | Bootstrap repo | chore/init | todo |  |  | Not started | Create Next.js 14 (App Router) + TypeScript project, add TailwindCSS, init git, MIT license, README | app/, package.json, tailwind config, public/ | N/A |
-| 2 | T002 | VS Code workspace & settings | chore/vscode-setup | todo |  |  | Not started | Add `.vscode/extensions.json` and `.vscode/settings.json` (format on save, Prettier, tailwind class sorting) | .vscode/ | N/A |
-| 3 | T003 | EditorConfig + Prettier | chore/formatting | todo |  |  | Not started | Add `.editorconfig` and `.prettierrc` (2 spaces, LF, single quotes) | repo root configs | N/A |
-| 4 | T004 | Env templates | chore/env | todo |  |  | Not started | Add `.env.example` with public and secret keys | `.env.example` | NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY, STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET |
-| 5 | T005 | Supabase client helpers | feat/lib-supabase | todo |  |  | Not started | Create `lib/supabaseServer.ts` and `lib/supabaseClient.ts` using `@supabase/supabase-js` | lib/ (supabase helpers), server and client code | SUPABASE keys in ENV or secret manager (see `.env.example`) |
-| 6 | T006 | Profiles + RBAC schema | db/profiles | todo |  |  | Not started | SQL migration: profiles table and RLS policies | db/migrations, supabase schema | DB migrations; RLS policies; no secret required (DB access for migrations)
-| 7 | T007 | Listings + Images schema | db/listings | todo |  |  | Not started | SQL migration: listings and listing_images tables, RLS for seller CRUD | db/migrations, storage for images | N/A (migrations) |
-| 8 | T008 | Auctions & Bids schema | db/auctions-bids | todo |  |  | Not started | SQL migration: auctions and bids, indexes | db/migrations, auctions domain logic | N/A |
-| 9 | T009 | Orders schema | db/orders | todo |  |  | Not started | SQL migration: orders table with stripe_payment_intent field | db/migrations, payments module | N/A |
-|10 | T010 | Inspections schema | db/inspections | todo |  |  | Not started | SQL migration: inspections and inspection_bookings tables | db/migrations, inspections domain | N/A |
-|11 | T011 | App settings schema | db/app-settings | todo |  |  | Not started | SQL migration: app_settings (key, value jsonb) and kyc_fields table | db/migrations, admin/settings module | N/A (app_settings stored in DB)
-|12 | T012 | Notifications schema | db/notifications | todo |  |  | Not started | SQL migration: notification_templates and notifications | db/migrations, notifications subsystem | N/A |
-|13 | T013 | Terms acceptances | db/legal | todo |  |  | Not started | SQL migration: terms_acceptances(user_id, terms_version, accepted_at) | db/migrations, legal flows | N/A |
-|14 | T014 | Commit migrations | db/commit | todo |  |  | Not started | Export and commit SQL migration files; idempotent scripts | db/migrations | N/A |
-|15 | T015 | GET /api/settings | feat/api-settings-get | todo |  |  | Not started | Implement `app/api/settings/route.ts` with optional `?keys=a,b` and 3-min cache | app/api/settings | Requires SUPABASE_SERVICE_ROLE_KEY for server access; settings read from `app_settings` in DB |
-|16 | T016 | POST /api/settings (admin) | feat/api-settings-post | todo |  |  | Not started | Admin-only upsert of settings; invalidate cache | app/api/settings | Admin auth (JWT / server role); SUPABASE_SERVICE_ROLE_KEY |
-|17 | T017 | Seed default settings | chore/seed-settings | todo |  |  | Not started | Seed auction and notification defaults into `app_settings` | db/seeds, scripts/seed-settings | N/A (seeding uses DB admin creds)
-|18 | T018 | Audit log table | db/audit-log | todo |  |  | Not started | Add `audit_log` table and helper to record changes | db/migrations, lib/audit.ts | N/A |
-|19 | T019 | Auth wiring (server/client) | feat/auth | todo |  |  | Not started | Supabase auth hooks/server helpers for session reads and redirects | lib/auth, app/(middleware)/hooks | SUPABASE keys in ENV; session cookies handled server-side |
-|20 | T020 | Dynamic onboarding (Buyer/Seller) | feat/onboarding-forms | todo |  |  | Not started | Onboarding forms rendering `kyc_fields` from DB, with validation and file upload | app/onboarding, kyc forms, storage | Storage creds: Supabase storage keys (ENV) and upload policies |
-|21 | T021 | KYC upload & review status | feat/kyc-upload | todo |  |  | Not started | Document upload, metadata, status page | app/profile/kyc, storage | Storage keys; approvals via admin UI (no new env keys)
-|22 | T022 | Terms consent gate | feat/terms-consent | todo |  |  | Not started | Require latest terms_version from `app_settings` at signup/before bid; modal to accept; record in `terms_acceptances` | app/auth flows, app/api/bid | Terms version tracked in DB `app_settings` |
-|23 | T023 | Create listing UI | feat/listing-create | todo |  |  | Not started | Build `/sell/new` form, upload images to Supabase Storage | app/sell/new, storage, validations | Storage keys (ENV) |
-|24 | T024 | Browse listings page | feat/listings-browse | todo |  |  | Not started | Implement `/browse` with filters and SSR pagination | app/browse, server components | N/A |
-|25 | T025 | Listing detail page | feat/listing-detail | todo |  |  | Not started | Listing page with gallery, specs, inspection slots, pricing area | app/listings/[id] | N/A |
-|26 | T026 | Search & FTS | feat/listings-search | todo |  |  | Not started | Add Postgres FTS, search bar with highlights | db/indices, app/search | N/A |
-|27 | T027 | Auction helpers | feat/auction-hooks | todo |  |  | Not started | Helpers: isActive, timeLeft, currentHighBid, minNextBid (depends on settings) | lib/auction.ts, UI hooks | Reads `app_settings` for fee/min increment |
-|28 | T028 | POST /api/auctions/[id]/bid | feat/api-bid | todo |  |  | Not started | Validate auction active, deposit authorized, amount >= minNextBid; soft-close extension | app/api/auctions/[id]/bid | Requires deposit/auth keys, SUPABASE_SERVICE_ROLE_KEY for server-side writes; Stripe for deposits (if applicable)
-|29 | T029 | Realtime bids subscription | feat/bid-realtime | todo |  |  | Not started | Subscribe to bids via Supabase Realtime; optimistic UI updates | client hooks, realtime subscriptions | N/A (uses Supabase public realtime)
-|30 | T030 | Outbid notifications | feat/outbid-notify | todo |  |  | Not started | Notify previous highest bidder via in-app/email using `notification_templates` | server triggers/listeners, notifications | Email sending via Nodemailer (stub) and notification templates in DB |
-|31 | T031 | Manage inspection slots (seller) | feat/inspection-manage | todo |  |  | Not started | Seller CRUD for inspection slots with capacity and buffer validation | app/seller/inspections, server actions | N/A |
-|32 | T032 | Book/cancel inspection (buyer) | feat/inspection-book | todo |  |  | Not started | Book and cancel inspection slots; capacity checks, notifications | app/inspections, bookings | N/A |
-|33 | T033 | Inspection reminders | feat/inspection-reminders | todo |  |  | Not started | Send reminders X hours before slot via in-app/email | background jobs / cron, notifications | Notification templates and scheduler config in `app_settings` |
-|34 | T034 | Stripe client setup | feat/stripe-setup | todo |  |  | Not started | Create `lib/stripe.ts`, load keys from ENV, test mode indicator UI | lib/stripe, payments UI | STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET in ENV |
-|35 | T035 | Authorize deposit | feat/api-deposit | todo |  |  | Not started | POST /api/deposits/authorize: create PaymentIntent, link to user+auction | app/api/deposits, payments flow | STRIPE keys in ENV; deposit percent from `app_settings` |
-|36 | T036 | Release/refund deposits | feat/deposit-release | todo |  |  | Not started | Capture winner deposit, refund others; cron or server action | server jobs, payments | STRIPE keys; DB records for deposits
-|37 | T037 | Deposit status UI | feat/deposit-ui | todo |  |  | Not started | Show deposit badges and CTA on auction page | app/auctions UI | N/A (reads deposit status from DB)
-|38 | T038 | Fixed price checkout | feat/checkout-fixed | todo |  |  | Not started | Stripe Checkout for fixed listings; create Checkout Session and pending order | app/api/checkout/fixed, orders | STRIPE keys in ENV |
-|39 | T039 | Auction winner invoice | feat/invoice-auction | todo |  |  | Not started | On auction close, create order, deduct deposit, create PaymentIntent | server jobs, orders | STRIPE keys; order records in DB
-|40 | T040 | Stripe webhooks | feat/stripe-webhooks | todo |  |  | Not started | /api/stripe/webhook verifying signature; handle events and update orders | app/api/stripe/webhook | STRIPE_WEBHOOK_SECRET in ENV |
-|41 | T041 | Payout delay & fees | feat/payout-fees | todo |  |  | Not started | Apply fees.transaction_percent; set payout delay from settings | orders, admin settings | fees in `app_settings` |
-|42 | T042 | Bell dropdown UI | feat/notifications-ui | todo |  |  | Not started | Navbar bell with unread count and dropdown; notifications page | app/components/notifications | N/A |
-|43 | T043 | Notification triggers | feat/notifications-triggers | todo |  |  | Not started | Server helpers to insert notifications on events (new bid, outbid, auction won...) | lib/notifications, triggers | N/A |
-|44 | T044 | Email renderer | feat/email-templates | todo |  |  | Not started | Render email templates from DB, compile body_md with templating, send via nodemailer stub | lib/email, notification templates | NODemailer config in ENV (stub provider) |
-|45 | T045 | User preferences | feat/notify-preferences | todo |  |  | Not started | Notification preferences page to toggle channels and digest frequency | app/settings/notifications | Stored per-user or in `app_settings`
-|46 | T046 | Admin route guard | feat/admin-gate | todo |  |  | Not started | Admin guard for `/admin` based on `profiles.role='admin'` | app/admin, middleware | Auth uses Supabase session and RLS checks |
-|47 | T047 | Settings editor UI | feat/admin-settings | todo |  |  | Not started | Admin CRUD editor for app settings with JSON editor + validation | app/admin/settings | Requires admin auth; writes use SUPABASE_SERVICE_ROLE_KEY or server-side API
-|48 | T048 | KYC manager | feat/admin-kyc | todo |  |  | Not started | Approve/reject KYC with notes, preview docs, notify user | app/admin/kyc | N/A (reads storage, writes via admin UI)
-|49 | T049 | Listings moderation | feat/admin-listings | todo |  |  | Not started | Moderation UI, bulk operations, inspections overview | app/admin/listings | N/A |
-|50 | T050 | Payments & deposits | feat/admin-payments | todo |  |  | Not started | Dashboard for deposits/payouts and manual refund | app/admin/payments | STRIPE keys for refunds; audit logs
-|51 | T051 | Notification templates CMS | feat/admin-templates | todo |  |  | Not started | CRUD for notification_templates with preview and variables | app/admin/notification-templates | N/A |
-|52 | T052 | Legal CMS (Terms/Privacy) | feat/admin-cms-legal | todo |  |  | Not started | Editable markdown for Terms & Privacy with publish/version to `app_settings` | app/admin/legal | `terms_version` in `app_settings` stored in DB
-|53 | T053 | Audit log viewer | feat/admin-audit | todo |  |  | Not started | Audit log viewer with filters | app/admin/audit | Reads `audit_log` table in DB
-|54 | T054 | Brand theme & favicon | ui/brand | todo |  |  | Not started | Apply Tailwind theme, load Inter font, add favicon and navbar logo | styles/tailwind, public/favicon | N/A (favicon stored in public; fonts via Google/Local)
-|55 | T055 | Landing hero + CTA | ui/landing | todo |  |  | Not started | Build landing hero with CTA and 3-step how-it-works | app/(landing) | N/A |
-|56 | T056 | Browse filters & URL state | ui/filters | todo |  |  | Not started | Filters synced to URLSearchParams; SSR results | app/browse, client hooks | N/A |
-|57 | T057 | Error/empty states | ui/states | todo |  |  | Not started | 404/500 pages and empty-state components | app/error, components/ui | N/A |
-|58 | T058 | Loading & skeletons | ui/loading | todo |  |  | Not started | Skeleton components and spinner | components/loading | N/A |
-|59 | T059 | Price trend charts | feat/analytics-prices | todo |  |  | Not started | Aggregate historical winning bids by material; API & client charts | analytics, API endpoints, client charts | N/A |
-|60 | T060 | Trading volume tiles | feat/analytics-volumes | todo |  |  | Not started | Dashboard KPIs and caching | analytics, server cache | N/A |
-|61 | T061 | Seller reputation score | feat/reputation-score | todo |  |  | Not started | Compute reputation based on fulfilment/disputes; badge on profile | lib/reputation, profile UI | N/A |
-|62 | T062 | Export reports CSV | feat/export-reports | todo |  |  | Not started | Admin CSV exports for price/volume reports (streamed) | app/api/reports, admin | N/A |
-|63 | T063 | Legal pages (Terms/Privacy/Refund) | legal/pages | todo |  |  | Not started | Add markdown pages and link in footer | app/(legal), public docs | N/A (content stored in repo/DB)
-|64 | T064 | Consent gating before bid | legal/require-consent | todo |  |  | Not started | Enforce latest terms acceptance before POST /bid or /deposit | app/api/bid, middleware | Terms stored in `app_settings`; record in `terms_acceptances` table
-|65 | T065 | Privacy & data retention | legal/privacy-retention | todo |  |  | Not started | Document retention policy and contact flow | docs/privacy, admin | N/A |
-|66 | T066 | Cookie banner | legal/cookies | todo |  |  | Not started | Cookie consent banner storing analytics opt-in | app/components/cookie | N/A |
-|67 | T067 | Rate limits for APIs | sec/rate-limit | todo |  |  | Not started | Add per-IP rate limits (in-memory or Upstash) for write endpoints | app/middleware, rate limiter | N/A (may require Upstash creds if used)
-|68 | T068 | Zod validation | sec/validation | todo |  |  | Not started | Add Zod schemas for forms and APIs | lib/schemas, validations | N/A |
-|69 | T069 | RLS policy review | sec/rls-review | todo |  |  | Not started | Audit RLS policies across DB for least privilege | db/review docs | N/A |
-|70 | T070 | Accessibility pass | qa/a11y | todo |  |  | Not started | Improve ARIA, contrast, keyboard navigation and skip-to-content | UI components, styles | N/A |
-|71 | T071 | Manual E2E checklist | qa/e2e-happy | todo |  |  | Not started | Document manual E2E flow covering signup->fulfilment | docs/QA, CHECKLIST.md | N/A |
-|72 | T072 | Vercel config | ops/vercel | todo |  |  | Not started | Add `vercel.json` and map env vars for production | vercel.json, deployment docs | Vercel env vars map to `.env` keys |
-|73 | T073 | Supabase production setup | ops/supabase-prod | todo |  |  | Not started | Connect to production Supabase, run migrations, verify RLS/storage | ops docs, migrations | Production SUPABASE keys (store securely)
-|74 | T074 | Stripe webhooks (prod) | ops/stripe-webhooks | todo |  |  | Not started | Configure Stripe webhook in prod and test events | ops docs, webhook setup | STRIPE_WEBHOOK_SECRET in prod env
-|75 | T075 | Custom domain & SSL | ops/domain | todo |  |  | Not started | Configure DNS, force HTTPS, add security headers | ops docs, Vercel settings | DNS provider credentials (ops)
-|76 | T076 | Release tag v0.1.0 | release/v0.1.0 | todo |  |  | Not started | Tag the repo `v0.1.0` and finalize CHANGELOG | release notes, changelog | N/A |
+task code: T001
+task type: Pre-flight
+description: Bootstrap repo — Create a Next.js 14 (App Router) + TypeScript project named 'matex'. Add TailwindCSS. Initialize git with MIT license and basic README.
+tools: Node.js, npm, Next.js 14, TypeScript, TailwindCSS
+references: matex_full_task_list.csv (T001), project_rules.md
+status: todo
+start date:
+end date:
+
+task code: T002
+task type: Pre-flight
+description: VS Code workspace & settings — add .vscode/extensions.json recommending Copilot, ESLint, Prettier, Tailwind CSS IntelliSense, EditorConfig, dotenv. Add .vscode/settings.json to format on save with Prettier and tailwind class sorting.
+tools: VS Code, Prettier, ESLint, Tailwind CSS Intellisense
+references: matex_full_task_list.csv (T002), project_rules.md
+status: todo
+start date:
+end date:
+
+task code: T003
+task type: Pre-flight
+description: EditorConfig + Prettier — create .editorconfig and .prettierrc enforcing 2 spaces, LF, single quotes.
+tools: EditorConfig, Prettier
+references: matex_full_task_list.csv (T003), project_rules.md
+status: todo
+start date:
+end date:
+
+task code: T004
+task type: Pre-flight
+description: Env templates — add .env.example with NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY, STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET.
+tools: text editor
+references: matex_full_task_list.csv (T004), project_rules.md
+status: todo
+start date:
+end date:
+
+Phase: 1 — Supabase
+
+task code: T005
+task type: Supabase
+description: Supabase client helpers — create lib/supabaseServer.ts and lib/supabaseClient.ts using @supabase/supabase-js for server (service role) and client (anon key).
+tools: @supabase/supabase-js, TypeScript
+references: matex_full_task_list.csv (T005), project_rules.md
+status: todo
+start date:
+end date:
+
+task code: T006
+task type: Supabase/DB
+description: Profiles + RBAC schema — SQL migration for profiles table and RLS (users read/update own; admins all).
+tools: psql/Supabase migrations, SQL
+references: matex_full_task_list.csv (T006), project_rules.md
+status: todo
+start date:
+end date:
+
+task code: T007
+task type: Supabase/DB
+description: Listings + Images schema — create listings and listing_images tables and RLS policies.
+tools: SQL migrations, Supabase Storage
+references: matex_full_task_list.csv (T007), project_rules.md
+status: todo
+start date:
+end date:
+
+task code: T008
+task type: Supabase/DB
+description: Auctions & Bids schema — create auctions and bids tables with appropriate indexes.
+tools: SQL migrations
+references: matex_full_task_list.csv (T008), project_rules.md
+status: todo
+start date:
+end date:
+
+task code: T009
+task type: Supabase/DB
+description: Orders schema — create orders table with stripe_payment_intent and status tracking.
+tools: SQL migrations
+references: matex_full_task_list.csv (T009), project_rules.md
+status: todo
+start date:
+end date:
+
+task code: T010
+task type: Supabase/DB
+description: Inspections schema — create inspections and inspection_bookings tables.
+tools: SQL migrations
+references: matex_full_task_list.csv (T010), project_rules.md
+status: todo
+start date:
+end date:
+
+task code: T011
+task type: Supabase/DB
+description: App settings schema — add app_settings and kyc_fields tables.
+tools: SQL migrations
+references: matex_full_task_list.csv (T011), project_rules.md
+status: todo
+start date:
+end date:
+
+task code: T012
+task type: Supabase/DB
+description: Notifications schema — create notification_templates and notifications tables.
+tools: SQL migrations
+references: matex_full_task_list.csv (T012), project_rules.md
+status: todo
+start date:
+end date:
+
+task code: T013
+task type: Supabase/DB (Legal)
+description: Terms acceptances — create terms_acceptances table to record user acceptance of T&C.
+tools: SQL migrations
+references: matex_full_task_list.csv (T013), project_rules.md
+status: todo
+start date:
+end date:
+
+task code: T014
+task type: Supabase/DB
+description: Commit migrations — export SQL migration files and commit to repo; ensure idempotency.
+tools: migration tool (pgm, supabase), git
+references: matex_full_task_list.csv (T014), project_rules.md
+status: todo
+start date:
+end date:
+
+Phase: 2 — Settings
+
+task code: T015
+task type: API/Settings
+description: GET /api/settings — implement `app/api/settings/route.ts` supporting `?keys=` and a 3-minute in-memory cache server-side.
+tools: Next.js App Router API routes, Supabase server client, TypeScript
+references: matex_full_task_list.csv (T015), project_rules.md, docs/SETTINGS_KEYS.md
+status: todo
+start date:
+end date:
+
+task code: T016
+task type: API/Settings (Admin)
+description: POST /api/settings (admin) — upsert multiple settings atomically and invalidate cache.
+tools: Next.js API, Supabase, server auth
+references: matex_full_task_list.csv (T016), project_rules.md
+status: todo
+start date:
+end date:
+
+task code: T017
+task type: Chore/Seed
+description: Seed default settings — seed auction and notification defaults into `app_settings`.
+tools: seed scripts, Supabase admin client
+references: matex_full_task_list.csv (T017), project_rules.md
+status: todo
+start date:
+end date:
+
+task code: T018
+task type: DB/Audit
+description: Audit log table — add `audit_log` table and helper for logging changes.
+tools: SQL migrations, helper lib for audit writes
+references: matex_full_task_list.csv (T018), project_rules.md
+status: todo
+start date:
+end date:
+
+Phase: 3 — Auth & KYC
+
+task code: T019
+task type: Auth
+description: Auth wiring (server/client) — create Supabase auth context/hooks and server-side helpers.
+tools: Supabase Auth, Next.js server components, TypeScript
+references: matex_full_task_list.csv (T019), project_rules.md
+status: todo
+start date:
+end date:
+
+task code: T020
+task type: Auth/KYC UI
+description: Dynamic onboarding (Buyer/Seller) — render dynamic KYC fields from DB and support file uploads.
+tools: React forms, Zod, Supabase Storage
+references: matex_full_task_list.csv (T020), project_rules.md
+status: todo
+start date:
+end date:
+
+task code: T021
+task type: KYC
+description: KYC upload & review status — implement document upload, metadata, and status page.
+tools: Supabase Storage, server APIs
+references: matex_full_task_list.csv (T021), project_rules.md
+status: todo
+start date:
+end date:
+
+task code: T022
+task type: Legal/Auth
+description: Terms consent gate — require T&C consent on signup and before bidding; store acceptance.
+tools: UI modal, DB `terms_acceptances`, middleware
+references: matex_full_task_list.csv (T022), project_rules.md
+status: todo
+start date:
+end date:
+
+Phase: 4 — Listings
+
+task code: T023
+task type: UI/Listing
+description: Create listing UI — `/sell/new` with image uploads to Supabase Storage.
+tools: React forms, Supabase Storage, Zod
+references: matex_full_task_list.csv (T023), project_rules.md
+status: todo
+start date:
+end date:
+
+task code: T024
+task type: UI/Browse
+description: Browse listings page — `/browse` with filters and SSR pagination.
+tools: Next.js server components, pagination, filtering
+references: matex_full_task_list.csv (T024), project_rules.md
+status: todo
+start date:
+end date:
+
+task code: T025
+task type: UI/Listing Detail
+description: Listing detail page — gallery, specs, inspection slots, pricing area.
+tools: React components, Supabase queries
+references: matex_full_task_list.csv (T025), project_rules.md
+status: todo
+start date:
+end date:
+
+task code: T026
+task type: DB/Search
+description: Search & FTS — add Postgres full-text search and search UI.
+tools: Postgres FTS, Next.js, server-side indexing
+references: matex_full_task_list.csv (T026), project_rules.md
+status: todo
+start date:
+end date:
+
+Phase: 5 — Auctions
+
+task code: T027
+task type: Domain/Helpers
+description: Auction helpers — compute isActive, timeLeft, currentHighBid, minNextBid using settings.
+tools: TypeScript helpers, Zod for schemas
+references: matex_full_task_list.csv (T027), project_rules.md
+status: todo
+start date:
+end date:
+
+task code: T028
+task type: API/Auction
+description: POST /api/auctions/[id]/bid — validate auction active, deposit authorized, amount >= minNextBid; extend soft-close if needed.
+tools: Next.js API route, Supabase transactions, Zod
+references: matex_full_task_list.csv (T028), project_rules.md
+status: todo
+start date:
+end date:
+
+task code: T029
+task type: Realtime
+description: Realtime bids subscription — use Supabase Realtime to stream bids and update UI.
+tools: Supabase Realtime, client subscriptions
+references: matex_full_task_list.csv (T029), project_rules.md
+status: todo
+start date:
+end date:
+
+task code: T030
+task type: Notifications
+description: Outbid notifications — notify previous highest bidder via in-app/email when outbid.
+tools: notifications subsystem, Nodemailer stub
+references: matex_full_task_list.csv (T030), project_rules.md
+status: todo
+start date:
+end date:
+
+Phase: 6 — Inspections
+
+task code: T031
+task type: UI/Inspections
+description: Manage inspection slots (seller) — seller can add/remove slots with capacity and buffer validation.
+tools: server actions, DB migrations
+references: matex_full_task_list.csv (T031), project_rules.md
+status: todo
+start date:
+end date:
+
+task code: T032
+task type: Booking
+description: Book/cancel inspection (buyer) — booking logic, capacity checks, notifications.
+tools: Supabase transactions, UI
+references: matex_full_task_list.csv (T032), project_rules.md
+status: todo
+start date:
+end date:
+
+task code: T033
+task type: Notifications/Scheduler
+description: Inspection reminders — send reminders before slots via in-app/email (configurable in settings).
+tools: scheduler/cron, notifications system
+references: matex_full_task_list.csv (T033), project_rules.md
+status: todo
+start date:
+end date:
+
+Phase: 7 — Deposits
+
+task code: T034
+task type: Payments/Stripe
+description: Stripe client setup — create lib/stripe.ts and load keys from ENV; show test mode on UI.
+tools: Stripe SDK, ENV variables
+references: matex_full_task_list.csv (T034), project_rules.md
+status: todo
+start date:
+end date:
+
+task code: T035
+task type: API/Deposits
+description: Authorize deposit — POST /api/deposits/authorize to create PaymentIntent and link to user+auction.
+tools: Stripe PaymentIntent, server APIs
+references: matex_full_task_list.csv (T035), project_rules.md
+status: todo
+start date:
+end date:
+
+task code: T036
+task type: Payments/Release
+description: Release/refund deposits — capture winner deposit, refund others; scheduled job or server action.
+tools: Stripe API, server jobs
+references: matex_full_task_list.csv (T036), project_rules.md
+status: todo
+start date:
+end date:
+
+task code: T037
+task type: UI/Deposits
+description: Deposit status UI — show deposit status in auction page with badges and CTA.
+tools: React components, Supabase queries
+references: matex_full_task_list.csv (T037), project_rules.md
+status: todo
+start date:
+end date:
+
+Phase: 8 — Payments
+
+task code: T038
+task type: Checkout
+description: Fixed price checkout — Stripe Checkout for fixed listings, create pending order and success/cancel pages.
+tools: Stripe Checkout, server API, Next.js pages
+references: matex_full_task_list.csv (T038), project_rules.md
+status: todo
+start date:
+end date:
+
+task code: T039
+task type: Invoicing
+description: Auction winner invoice — on auction close, create order, deduct deposit, create PaymentIntent for remaining balance.
+tools: server jobs, Stripe, orders DB
+references: matex_full_task_list.csv (T039), project_rules.md
+status: todo
+start date:
+end date:
+
+task code: T040
+task type: Webhooks
+description: Stripe webhooks — implement webhook handler and verify signature to update orders.
+tools: Stripe webhooks, Next.js API, secret in ENV
+references: matex_full_task_list.csv (T040), project_rules.md
+status: todo
+start date:
+end date:
+
+task code: T041
+task type: Payments/Admin
+description: Payout delay & fees — apply platform fees and payout delay from settings; reflect in order summary.
+tools: DB calculations, admin settings
+references: matex_full_task_list.csv (T041), project_rules.md
+status: todo
+start date:
+end date:
+
+Phase: 9 — Notifications
+
+task code: T042
+task type: UI/Notifications
+description: Bell dropdown UI — navbar bell with unread count and dropdown; notifications page and mark-as-read.
+tools: React components, Supabase queries
+references: matex_full_task_list.csv (T042), project_rules.md
+status: todo
+start date:
+end date:
+
+task code: T043
+task type: Triggers
+description: Notification triggers — helpers to insert notifications on events (new bid, outbid, auction won, inspection booked, deposit authorized).
+tools: server helpers, DB inserts
+references: matex_full_task_list.csv (T043), project_rules.md
+status: todo
+start date:
+end date:
+
+task code: T044
+task type: Email
+description: Email renderer — render email templates from DB, compile markdown with templating, send via nodemailer stub.
+tools: Nodemailer (stub), markdown renderer, template engine
+references: matex_full_task_list.csv (T044), project_rules.md
+status: todo
+start date:
+end date:
+
+task code: T045
+task type: Preferences
+description: User preferences — notification preferences page to toggle channels and digest frequency.
+tools: UI forms, DB storage
+references: matex_full_task_list.csv (T045), project_rules.md
+status: todo
+start date:
+end date:
+
+Phase: 10 — Admin
+
+task code: T046
+task type: Admin
+description: Admin route guard — protect /admin routes, require profiles.role='admin'.
+tools: middleware, auth checks
+references: matex_full_task_list.csv (T046), project_rules.md
+status: todo
+start date:
+end date:
+
+task code: T047
+task type: Admin/Settings
+description: Settings editor UI — CRUD editor for auction, fees, legal, inspection, notifications with validation and cache bust.
+tools: JSON editor, server APIs, validation (Zod)
+references: matex_full_task_list.csv (T047), project_rules.md
+status: todo
+start date:
+end date:
+
+task code: T048
+task type: Admin/KYC
+description: KYC manager — approve/reject KYC with notes and notify users; preview documents.
+tools: admin UI, storage preview
+references: matex_full_task_list.csv (T048), project_rules.md
+status: todo
+start date:
+end date:
+
+task code: T049
+task type: Admin/Moderation
+description: Listings moderation — moderation UI, bulk operations, inspections overview.
+tools: admin UI, DB queries
+references: matex_full_task_list.csv (T049), project_rules.md
+status: todo
+start date:
+end date:
+
+task code: T050
+task type: Admin/Payments
+description: Payments & deposits dashboard — show authorized/captured/refunded deposits and orders; manual refund with audit.
+tools: admin UI, Stripe APIs
+references: matex_full_task_list.csv (T050), project_rules.md
+status: todo
+start date:
+end date:
+
+task code: T051
+task type: Admin/Templates
+description: Notification templates CMS — CRUD for templates with preview and variable docs.
+tools: admin UI, markdown editor
+references: matex_full_task_list.csv (T051), project_rules.md
+status: todo
+start date:
+end date:
+
+task code: T052
+task type: Admin/Legal
+description: Legal CMS (Terms/Privacy) — editable markdown for Terms & Privacy; publish version to app_settings and force re-accept on change.
+tools: markdown editor, DB app_settings
+references: matex_full_task_list.csv (T052), project_rules.md
+status: todo
+start date:
+end date:
+
+task code: T053
+task type: Admin/Audit
+description: Audit log viewer — add viewer with filters by actor, action and date range.
+tools: admin UI, DB queries
+references: matex_full_task_list.csv (T053), project_rules.md
+status: todo
+start date:
+end date:
+
+Phase: 11 — UX & Identity
+
+task code: T054
+task type: UI/Brand
+description: Brand theme & favicon — apply Tailwind brand variables, load Inter, add favicon and navbar logo.
+tools: TailwindCSS, font loading, image assets
+references: matex_full_task_list.csv (T054), project_rules.md, docs/LOGO.md
+status: todo
+start date:
+end date:
+
+task code: T055
+task type: UI/Landing
+description: Landing hero + CTA — hero section with CTA and 3-step how-it-works.
+tools: React, Tailwind
+references: matex_full_task_list.csv (T055), project_rules.md
+status: todo
+start date:
+end date:
+
+task code: T056
+task type: UI/Filters
+description: Browse filters & URL state — filters synced to URLSearchParams with SSR results.
+tools: URLSearchParams, server-side rendering
+references: matex_full_task_list.csv (T056), project_rules.md
+status: todo
+start date:
+end date:
+
+task code: T057
+task type: UI/States
+description: Error/empty states — add 404/500 pages and empty-state components.
+tools: React components, error handling
+references: matex_full_task_list.csv (T057), project_rules.md
+status: todo
+start date:
+end date:
+
+task code: T058
+task type: UI/Loading
+description: Loading & skeletons — skeleton loaders and spinners for cards/tables.
+tools: CSS animations, components
+references: matex_full_task_list.csv (T058), project_rules.md
+status: todo
+start date:
+end date:
+
+Phase: 12 — Data & Analytics
+
+task code: T059
+task type: Analytics
+description: Price trend charts — aggregate historical winning bids by material and render line charts client-side.
+tools: DB aggregation, chart library (e.g., Chart.js, Recharts)
+references: matex_full_task_list.csv (T059), project_rules.md
+status: todo
+start date:
+end date:
+
+task code: T060
+task type: Analytics
+description: Trading volume tiles — dashboard KPIs: active auctions, weekly volume, new sellers, returning buyers.
+tools: server aggregation, caching
+references: matex_full_task_list.csv (T060), project_rules.md
+status: todo
+start date:
+end date:
+
+task code: T061
+task type: Analytics
+description: Seller reputation score — compute score from fulfilment metrics and show badge on profile.
+tools: background jobs, DB queries
+references: matex_full_task_list.csv (T061), project_rules.md
+status: todo
+start date:
+end date:
+
+task code: T062
+task type: Reporting
+description: Export reports CSV — admin can export price/volume reports as streamed CSV responses.
+tools: server streams, CSV writer
+references: matex_full_task_list.csv (T062), project_rules.md
+status: todo
+start date:
+end date:
+
+Phase: 13 — Legal & Compliance
+
+task code: T063
+task type: Legal
+description: Legal pages (Terms/Privacy/Refund) — add markdown pages and link in footer.
+tools: markdown pages, routing
+references: matex_full_task_list.csv (T063), project_rules.md
+status: todo
+start date:
+end date:
+
+task code: T064
+task type: Legal/Enforcement
+description: Consent gating before bid — enforce latest terms acceptance before POST /bid or /deposit.
+tools: middleware, DB checks
+references: matex_full_task_list.csv (T064), project_rules.md
+status: todo
+start date:
+end date:
+
+task code: T065
+task type: Legal/Policy
+description: Privacy & data retention — document retention policy for bids, orders and KYC documents.
+tools: docs, admin settings
+references: matex_full_task_list.csv (T065), project_rules.md
+status: todo
+start date:
+end date:
+
+task code: T066
+task type: Legal/UX
+description: Cookie banner — add consent banner with analytics toggle and store choice.
+tools: client UI, cookie/localStorage
+references: matex_full_task_list.csv (T066), project_rules.md
+status: todo
+start date:
+end date:
+
+Phase: 14 — QA/Security/Perf
+
+task code: T067
+task type: Security
+description: Rate limits for APIs — add per-IP rate limiter for write endpoints (bid, deposit, checkout, settings).
+tools: in-memory or Upstash rate limiter, middleware
+references: matex_full_task_list.csv (T067), project_rules.md
+status: todo
+start date:
+end date:
+
+task code: T068
+task type: Validation
+description: Zod validation — add Zod schemas for listing, bid, inspection, settings and return typed errors.
+tools: Zod, TypeScript
+references: matex_full_task_list.csv (T068), project_rules.md
+status: todo
+start date:
+end date:
+
+task code: T069
+task type: Security/RLS
+description: RLS policy review — audit all RLS to ensure least privilege and PII protection.
+tools: DB audit scripts, policies review
+references: matex_full_task_list.csv (T069), project_rules.md
+status: todo
+start date:
+end date:
+
+task code: T070
+task type: Accessibility
+description: Accessibility pass — improve ARIA, contrast, keyboard navigation and add skip-to-content link.
+tools: accessibility audits, Lighthouse, components
+references: matex_full_task_list.csv (T070), project_rules.md
+status: todo
+start date:
+end date:
+
+task code: T071
+task type: QA
+description: Manual E2E checklist — write a manual E2E flow for signup through fulfilment for testing.
+tools: docs, checklist
+references: matex_full_task_list.csv (T071), project_rules.md
+status: todo
+start date:
+end date:
+
+Phase: 15 — Deployment
+
+task code: T072
+task type: Ops/Vercel
+description: Vercel config — add vercel.json and map environment variables for production.
+tools: Vercel config, environment mapping
+references: matex_full_task_list.csv (T072), project_rules.md
+status: todo
+start date:
+end date:
+
+task code: T073
+task type: Ops/Supabase
+description: Supabase production setup — connect to production Supabase and run migrations; verify RLS and storage buckets.
+tools: Supabase dashboard, migrations
+references: matex_full_task_list.csv (T073), project_rules.md
+status: todo
+start date:
+end date:
+
+task code: T074
+task type: Ops/Stripe
+description: Stripe webhooks (prod) — configure Stripe webhooks in production and test payment events end-to-end.
+tools: Stripe dashboard, webhook registration
+references: matex_full_task_list.csv (T074), project_rules.md
+status: todo
+start date:
+end date:
+
+task code: T075
+task type: Ops/Domain
+description: Custom domain & SSL — configure DNS, force HTTPS, add security headers (HSTS).
+tools: DNS provider, hosting (Vercel)
+references: matex_full_task_list.csv (T075), project_rules.md
+status: todo
+start date:
+end date:
+
+task code: T076
+task type: Release
+description: Release tag v0.1.0 — create CHANGELOG entry and tag repo `v0.1.0`.
+tools: git tag, changelog
+references: matex_full_task_list.csv (T076), project_rules.md
+status: todo
+start date:
+end date:
+
+---
+
+Notes:
+- This file mirrors the CSV order and follows `project_rules.md` (one task at a time).
+- I can update a task entry with `status`, `start date`, `end date`, and `test status` as you begin work on it.
 
 ---
 
