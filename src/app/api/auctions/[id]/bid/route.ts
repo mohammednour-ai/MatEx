@@ -1,0 +1,261 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { supabaseServer } from '@/lib/supabaseServer';
+import { 
+  getAuctionWithBids, 
+  getAuctionSettings, 
+  computeAuctionState, 
+  validateBidAmount,
+  isInSoftClose,
+  calculateSoftCloseExtension
+} from '@/lib/auction-helpers';
+
+interface BidRequest {
+  amount_cad: number;
+}
+
+interface BidResponse {
+  success: boolean;
+  bid?: {
+    id: string;
+    amount_cad: number;
+    created_at: string;
+  };
+  auction_state?: {
+    isActive: boolean;
+    timeLeft: number;
+    currentHighBid: number;
+    minNextBid: number;
+    totalBids: number;
+    hasEnded: boolean;
+    hasStarted: boolean;
+  };
+  soft_close_extended?: boolean;
+  new_end_time?: string;
+  error?: string;
+  message?: string;
+}
+
+export async function POST(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+): Promise<NextResponse<BidResponse>> {
+  try {
+    const auctionId = params.id;
+    
+    // Parse request body
+    let bidData: BidRequest;
+    try {
+      bidData = await request.json();
+    } catch (error) {
+      return NextResponse.json(
+        { success: false, error: 'Invalid JSON in request body' },
+        { status: 400 }
+      );
+    }
+
+    // Validate bid amount
+    if (!bidData.amount_cad || typeof bidData.amount_cad !== 'number' || bidData.amount_cad <= 0) {
+      return NextResponse.json(
+        { success: false, error: 'Valid bid amount is required' },
+        { status: 400 }
+      );
+    }
+
+    // Get user from headers (set by middleware)
+    const userId = request.headers.get('x-user-id');
+    const userRole = request.headers.get('x-user-role');
+    const userEmailVerified = request.headers.get('x-user-email-verified') === 'true';
+    const userKycStatus = request.headers.get('x-user-kyc-status');
+
+    if (!userId) {
+      return NextResponse.json(
+        { success: false, error: 'Authentication required' },
+        { status: 401 }
+      );
+    }
+
+    // Check user permissions
+    if (!userEmailVerified) {
+      return NextResponse.json(
+        { success: false, error: 'Email verification required to place bids' },
+        { status: 403 }
+      );
+    }
+
+    if (userKycStatus !== 'approved') {
+      return NextResponse.json(
+        { success: false, error: 'KYC approval required to place bids' },
+        { status: 403 }
+      );
+    }
+
+    // Get auction with current bids
+    const auction = await getAuctionWithBids(auctionId);
+    if (!auction) {
+      return NextResponse.json(
+        { success: false, error: 'Auction not found' },
+        { status: 404 }
+      );
+    }
+
+    // Get auction settings
+    const settings = await getAuctionSettings();
+
+    // Compute current auction state
+    const auctionState = computeAuctionState(auction, settings);
+
+    // Validate auction is active
+    if (!auctionState.isActive) {
+      const message = auctionState.hasEnded ? 'Auction has ended' : 'Auction has not started yet';
+      return NextResponse.json(
+        { success: false, error: message },
+        { status: 400 }
+      );
+    }
+
+    // Validate bid amount against auction rules
+    const bidValidation = validateBidAmount(bidData.amount_cad, auction, settings);
+    if (!bidValidation.isValid) {
+      return NextResponse.json(
+        { success: false, error: bidValidation.error },
+        { status: 400 }
+      );
+    }
+
+    // Check if user is the seller (prevent self-bidding)
+    const { data: listing } = await supabaseServer
+      .from('listings')
+      .select('seller_id')
+      .eq('id', auction.listing_id)
+      .single();
+
+    if (listing?.seller_id === userId) {
+      return NextResponse.json(
+        { success: false, error: 'Sellers cannot bid on their own auctions' },
+        { status: 403 }
+      );
+    }
+
+    // TODO: Check deposit authorization when deposit system is implemented (T035)
+    // For now, we'll skip deposit validation as it's not yet implemented
+    if (settings.deposit_required) {
+      // This will be implemented in T035 - Authorize deposit
+      // For now, we'll log a warning and continue
+      console.warn('Deposit validation skipped - will be implemented in T035');
+    }
+
+    // Check if auction is in soft close period
+    const inSoftClose = isInSoftClose(auction, settings);
+    let softCloseExtended = false;
+    let newEndTime: string | undefined;
+
+    // Start database transaction for bid insertion and potential soft close extension
+    const { data: insertedBid, error: bidError } = await supabaseServer
+      .from('bids')
+      .insert({
+        auction_id: auctionId,
+        bidder_id: userId,
+        amount_cad: bidData.amount_cad
+      })
+      .select('id, amount_cad, created_at')
+      .single();
+
+    if (bidError) {
+      console.error('Error inserting bid:', bidError);
+      return NextResponse.json(
+        { success: false, error: 'Failed to place bid' },
+        { status: 500 }
+      );
+    }
+
+    // Handle soft close extension if needed
+    if (inSoftClose) {
+      const extendedEndTime = calculateSoftCloseExtension(auction, settings);
+      
+      const { error: updateError } = await supabaseServer
+        .from('auctions')
+        .update({ end_at: extendedEndTime.toISOString() })
+        .eq('id', auctionId);
+
+      if (updateError) {
+        console.error('Error extending auction end time:', updateError);
+        // Don't fail the bid if soft close extension fails
+        // The bid was successfully placed
+      } else {
+        softCloseExtended = true;
+        newEndTime = extendedEndTime.toISOString();
+      }
+    }
+
+    // Get updated auction state after bid placement
+    const updatedAuction = await getAuctionWithBids(auctionId);
+    const updatedAuctionState = updatedAuction 
+      ? computeAuctionState(updatedAuction, settings)
+      : auctionState;
+
+    // Return successful response
+    return NextResponse.json({
+      success: true,
+      bid: insertedBid,
+      auction_state: updatedAuctionState,
+      soft_close_extended: softCloseExtended,
+      new_end_time: newEndTime,
+      message: 'Bid placed successfully'
+    });
+
+  } catch (error) {
+    console.error('Error in bid API:', error);
+    return NextResponse.json(
+      { success: false, error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+
+// GET method to retrieve auction bids (optional, for debugging/admin)
+export async function GET(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+): Promise<NextResponse> {
+  try {
+    const auctionId = params.id;
+
+    // Get auction with bids
+    const auction = await getAuctionWithBids(auctionId);
+    if (!auction) {
+      return NextResponse.json(
+        { success: false, error: 'Auction not found' },
+        { status: 404 }
+      );
+    }
+
+    // Get auction settings and compute state
+    const settings = await getAuctionSettings();
+    const auctionState = computeAuctionState(auction, settings);
+
+    return NextResponse.json({
+      success: true,
+      auction: {
+        id: auction.id,
+        listing_id: auction.listing_id,
+        start_at: auction.start_at,
+        end_at: auction.end_at,
+        min_increment_cad: auction.min_increment_cad,
+        soft_close_seconds: auction.soft_close_seconds
+      },
+      bids: auction.bids?.map(bid => ({
+        amount_cad: bid.amount_cad,
+        created_at: bid.created_at,
+        bidder_id: bid.bidder_id
+      })) || [],
+      auction_state: auctionState
+    });
+
+  } catch (error) {
+    console.error('Error in GET bid API:', error);
+    return NextResponse.json(
+      { success: false, error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
