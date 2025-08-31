@@ -6,10 +6,12 @@
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "seed:settings": "node scripts/seed-settings.js"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.56.1",
+    "dotenv": "^16.4.5",
     "next": "15.5.2",
     "react": "19.1.0",
     "react-dom": "19.1.0"
