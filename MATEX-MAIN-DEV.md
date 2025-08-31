@@ -5,6 +5,91 @@ Overview:
 - Follow `project_rules.md`: one task at a time, document changes, use branches per task.
 - Use Supabase for DB, Next.js 14 + TypeScript for App Router, TailwindCSS for styling.
 
+🌍 Vision
+
+MatEx is a professional online marketplace where businesses and individuals can buy, sell, and auction waste, scrap, and surplus materials in a safe, transparent, and legally compliant way.
+The platform drives the circular economy by turning waste into valuable resources.
+
+🚩 The Problem
+
+Companies & factories generate tons of scrap and surplus materials (metal, wood, plastic, cardboard, cables).
+
+Current trading is done via phone calls, brokers, or generic platforms (Kijiji, Facebook Marketplace).
+
+Issues:
+
+❌ No transparency in pricing
+
+❌ Risk of fraud & non-payment
+
+❌ No deposits or legal structure to enforce seriousness
+
+❌ Time wasted in negotiations and disputes
+
+💡 The Solution – MatEx
+
+A regulated, data-driven exchange for waste & surplus.
+
+Core features:
+
+♻️ Fixed Price & Auction Listings
+
+💳 Secure Payments & Deposits (Stripe integration)
+
+🗓️ Pre-Auction Inspections (buyers can book visits)
+
+✅ KYC Onboarding (verify sellers & buyers)
+
+⚖️ Terms & Conditions compliance (Canadian laws)
+
+🔔 Realtime Notifications (outbids, wins, payments)
+
+📊 Data & Analytics Dashboard (price trends, market volumes)
+
+🎛️ Admin Dashboard (settings, KYC approvals, disputes, CMS)
+
+👤 Target Users
+
+Sellers: Factories, construction & demolition companies, workshops, recycling yards.
+
+Buyers: Scrap dealers, recyclers, B2B manufacturers, exporters/importers.
+
+🛠️ Tech Stack
+
+Frontend: Next.js 14 (TypeScript) + TailwindCSS + shadcn/ui
+
+Backend: Supabase (Postgres, Auth, Storage, Realtime)
+
+Payments: Stripe (Deposits, Invoices, Refunds)
+
+Validation: Zod
+
+Notifications: Supabase Realtime (in-app) + Email (Nodemailer)
+
+Deployment: Vercel (frontend) + Supabase (backend)
+
+📊 Revenue Model
+
+Transaction fee (3–5%)
+
+Premium listings (featured ads)
+
+Subscriptions for high-volume sellers
+
+Market data & analytics reports
+
+🚀 Roadmap (MVP → Growth)
+
+MVP: Listings + Auctions + Deposits + Payments + Notifications
+
+Phase 2: Admin Dashboard (KYC, Settings, Analytics)
+
+Phase 3: Mobile app (React Native)
+
+Phase 4: Expansion beyond Canada (US, Middle East, EU)
+
+Phase 5: AI-powered price prediction engine for scrap materials
+
 Rules (summary from `project_rules.md`):
 - No hallucinations: only use the stack defined in `project_rules.md`.
 - One task at a time: strictly follow the CSV order.
