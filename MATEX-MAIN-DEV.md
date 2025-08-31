@@ -1,830 +1,1537 @@
--# MATEX-MAIN-DEV
+﻿# MATEX MAIN DEV — Canonical Task List
 
-Overview:
-- Single linear task list derived from `matex_full_task_list.csv`.
-- Follow `project_rules.md`: one task at a time, document changes, use branches per task.
-- Use Supabase for DB, Next.js 14 + TypeScript for App Router, TailwindCSS for styling.
+IMPORTANT: This file is the authoritative source for tasks. Do NOT reference external files for task details. If anything is missing, Copilot must ask.
 
-🌍 Vision
+## Embedded Project Rules (short)
 
-MatEx is a professional online marketplace where businesses and individuals can buy, sell, and auction waste, scrap, and surplus materials in a safe, transparent, and legally compliant way.
-The platform drives the circular economy by turning waste into valuable resources.
-
-🚩 The Problem
-
-Companies & factories generate tons of scrap and surplus materials (metal, wood, plastic, cardboard, cables).
-
-Current trading is done via phone calls, brokers, or generic platforms (Kijiji, Facebook Marketplace).
-
-Issues:
-
-❌ No transparency in pricing
-
-❌ Risk of fraud & non-payment
-
-❌ No deposits or legal structure to enforce seriousness
-
-❌ Time wasted in negotiations and disputes
-
-💡 The Solution – MatEx
-
-A regulated, data-driven exchange for waste & surplus.
-
-Core features:
-
-♻️ Fixed Price & Auction Listings
-
-💳 Secure Payments & Deposits (Stripe integration)
-
-🗓️ Pre-Auction Inspections (buyers can book visits)
-
-✅ KYC Onboarding (verify sellers & buyers)
-
-⚖️ Terms & Conditions compliance (Canadian laws)
-
-🔔 Realtime Notifications (outbids, wins, payments)
-
-📊 Data & Analytics Dashboard (price trends, market volumes)
-
-🎛️ Admin Dashboard (settings, KYC approvals, disputes, CMS)
-
-👤 Target Users
-
-Sellers: Factories, construction & demolition companies, workshops, recycling yards.
-
-Buyers: Scrap dealers, recyclers, B2B manufacturers, exporters/importers.
-
-🛠️ Tech Stack
-
-Frontend: Next.js 14 (TypeScript) + TailwindCSS + shadcn/ui
-
-Backend: Supabase (Postgres, Auth, Storage, Realtime)
-
-Payments: Stripe (Deposits, Invoices, Refunds)
-
-Validation: Zod
-
-Notifications: Supabase Realtime (in-app) + Email (Nodemailer)
-
-Deployment: Vercel (frontend) + Supabase (backend)
-
-📊 Revenue Model
-
-Transaction fee (3–5%)
-
-Premium listings (featured ads)
-
-Subscriptions for high-volume sellers
-
-Market data & analytics reports
-
-🚀 Roadmap (MVP → Growth)
-
-MVP: Listings + Auctions + Deposits + Payments + Notifications
-
-Phase 2: Admin Dashboard (KYC, Settings, Analytics)
-
-Phase 3: Mobile app (React Native)
-
-Phase 4: Expansion beyond Canada (US, Middle East, EU)
-
-Phase 5: AI-powered price prediction engine for scrap materials
-
-Rules (summary from `project_rules.md`):
-- No hallucinations: only use the stack defined in `project_rules.md`.
-- One task at a time: strictly follow the CSV order.
-- Documentation first: for each task, list files changed, DB changes, API endpoints, and tests.
-
-References:
-- Source task list: `matex_full_task_list.csv`
-- Rules: `project_rules.md`
+- Use only the approved stack: Next.js 14 (TypeScript), Supabase, Stripe, TailwindCSS + shadcn/ui, Zod, Nodemailer.
+- One task at a time: follow T001..T076 order.
+- Documentation first: for each task include Files changed, DB changes, API endpoints, Tests.
+- Parameterise configuration via `app_settings` or `.env`.
+- Use TypeScript & Zod for validation.
+- After each task update `MATEX-MAIN-DEV-UPDATED.md` with changes, files, and tests.
 
 ---
 
-Phase: 0 — Pre-flight
+## Tasks (canonical order)
 
-task code: T001
-task type: Pre-flight
-description: Bootstrap repo — Create a Next.js 14 (App Router) + TypeScript project named 'matex'. Add TailwindCSS. Initialize git with MIT license and basic README.
-tools: Node.js, npm, Next.js 14, TypeScript, TailwindCSS
-references: matex_full_task_list.csv (T001), project_rules.md
-status: todo
-start date:
-end date:
+### T001 — Bootstrap repo
 
-task code: T002
-task type: Pre-flight
-description: VS Code workspace & settings — add .vscode/extensions.json recommending Copilot, ESLint, Prettier, Tailwind CSS IntelliSense, EditorConfig, dotenv. Add .vscode/settings.json to format on save with Prettier and tailwind class sorting.
-tools: VS Code, Prettier, ESLint, Tailwind CSS Intellisense
-references: matex_full_task_list.csv (T002), project_rules.md
-status: todo
-start date:
-end date:
+Phase: Phase 0 â€” Pre-flight
+Description: Create a Next.js 14 (App Router) + TypeScript project named 'matex'. Add TailwindCSS. Initialize git with MIT license and basic README.
 
-task code: T003
-task type: Pre-flight
-description: EditorConfig + Prettier — create .editorconfig and .prettierrc enforcing 2 spaces, LF, single quotes.
-tools: EditorConfig, Prettier
-references: matex_full_task_list.csv (T003), project_rules.md
-status: todo
-start date:
-end date:
+Files changed:
+- (list files changed; update when implementing)
 
-task code: T004
-task type: Pre-flight
-description: Env templates — add .env.example with NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY, STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET.
-tools: text editor
-references: matex_full_task_list.csv (T004), project_rules.md
-status: todo
-start date:
-end date:
+DB changes:
+- (describe schema/migrations if any)
 
-Phase: 1 — Supabase
+API endpoints:
+- (list endpoints, method, request/response)
 
-task code: T005
-task type: Supabase
-description: Supabase client helpers — create lib/supabaseServer.ts and lib/supabaseClient.ts using @supabase/supabase-js for server (service role) and client (anon key).
-tools: @supabase/supabase-js, TypeScript
-references: matex_full_task_list.csv (T005), project_rules.md
-status: todo
-start date:
-end date:
-
-task code: T006
-task type: Supabase/DB
-description: Profiles + RBAC schema — SQL migration for profiles table and RLS (users read/update own; admins all).
-tools: psql/Supabase migrations, SQL
-references: matex_full_task_list.csv (T006), project_rules.md
-status: todo
-start date:
-end date:
-
-task code: T007
-task type: Supabase/DB
-description: Listings + Images schema — create listings and listing_images tables and RLS policies.
-tools: SQL migrations, Supabase Storage
-references: matex_full_task_list.csv (T007), project_rules.md
-status: todo
-start date:
-end date:
-
-task code: T008
-task type: Supabase/DB
-description: Auctions & Bids schema — create auctions and bids tables with appropriate indexes.
-tools: SQL migrations
-references: matex_full_task_list.csv (T008), project_rules.md
-status: todo
-start date:
-end date:
-
-task code: T009
-task type: Supabase/DB
-description: Orders schema — create orders table with stripe_payment_intent and status tracking.
-tools: SQL migrations
-references: matex_full_task_list.csv (T009), project_rules.md
-status: todo
-start date:
-end date:
-
-task code: T010
-task type: Supabase/DB
-description: Inspections schema — create inspections and inspection_bookings tables.
-tools: SQL migrations
-references: matex_full_task_list.csv (T010), project_rules.md
-status: todo
-start date:
-end date:
-
-task code: T011
-task type: Supabase/DB
-description: App settings schema — add app_settings and kyc_fields tables.
-tools: SQL migrations
-references: matex_full_task_list.csv (T011), project_rules.md
-status: todo
-start date:
-end date:
-
-task code: T012
-task type: Supabase/DB
-description: Notifications schema — create notification_templates and notifications tables.
-tools: SQL migrations
-references: matex_full_task_list.csv (T012), project_rules.md
-status: todo
-start date:
-end date:
-
-task code: T013
-task type: Supabase/DB (Legal)
-description: Terms acceptances — create terms_acceptances table to record user acceptance of T&C.
-tools: SQL migrations
-references: matex_full_task_list.csv (T013), project_rules.md
-status: todo
-start date:
-end date:
-
-task code: T014
-task type: Supabase/DB
-description: Commit migrations — export SQL migration files and commit to repo; ensure idempotency.
-tools: migration tool (pgm, supabase), git
-references: matex_full_task_list.csv (T014), project_rules.md
-status: todo
-start date:
-end date:
-
-Phase: 2 — Settings
-
-task code: T015
-task type: API/Settings
-description: GET /api/settings — implement `app/api/settings/route.ts` supporting `?keys=` and a 3-minute in-memory cache server-side.
-tools: Next.js App Router API routes, Supabase server client, TypeScript
-references: matex_full_task_list.csv (T015), project_rules.md, docs/SETTINGS_KEYS.md
-status: todo
-start date:
-end date:
-
-task code: T016
-task type: API/Settings (Admin)
-description: POST /api/settings (admin) — upsert multiple settings atomically and invalidate cache.
-tools: Next.js API, Supabase, server auth
-references: matex_full_task_list.csv (T016), project_rules.md
-status: todo
-start date:
-end date:
-
-task code: T017
-task type: Chore/Seed
-description: Seed default settings — seed auction and notification defaults into `app_settings`.
-tools: seed scripts, Supabase admin client
-references: matex_full_task_list.csv (T017), project_rules.md
-status: todo
-start date:
-end date:
-
-task code: T018
-task type: DB/Audit
-description: Audit log table — add `audit_log` table and helper for logging changes.
-tools: SQL migrations, helper lib for audit writes
-references: matex_full_task_list.csv (T018), project_rules.md
-status: todo
-start date:
-end date:
-
-Phase: 3 — Auth & KYC
-
-task code: T019
-task type: Auth
-description: Auth wiring (server/client) — create Supabase auth context/hooks and server-side helpers.
-tools: Supabase Auth, Next.js server components, TypeScript
-references: matex_full_task_list.csv (T019), project_rules.md
-status: todo
-start date:
-end date:
-
-task code: T020
-task type: Auth/KYC UI
-description: Dynamic onboarding (Buyer/Seller) — render dynamic KYC fields from DB and support file uploads.
-tools: React forms, Zod, Supabase Storage
-references: matex_full_task_list.csv (T020), project_rules.md
-status: todo
-start date:
-end date:
-
-task code: T021
-task type: KYC
-description: KYC upload & review status — implement document upload, metadata, and status page.
-tools: Supabase Storage, server APIs
-references: matex_full_task_list.csv (T021), project_rules.md
-status: todo
-start date:
-end date:
-
-task code: T022
-task type: Legal/Auth
-description: Terms consent gate — require T&C consent on signup and before bidding; store acceptance.
-tools: UI modal, DB `terms_acceptances`, middleware
-references: matex_full_task_list.csv (T022), project_rules.md
-status: todo
-start date:
-end date:
-
-Phase: 4 — Listings
-
-task code: T023
-task type: UI/Listing
-description: Create listing UI — `/sell/new` with image uploads to Supabase Storage.
-tools: React forms, Supabase Storage, Zod
-references: matex_full_task_list.csv (T023), project_rules.md
-status: todo
-start date:
-end date:
-
-task code: T024
-task type: UI/Browse
-description: Browse listings page — `/browse` with filters and SSR pagination.
-tools: Next.js server components, pagination, filtering
-references: matex_full_task_list.csv (T024), project_rules.md
-status: todo
-start date:
-end date:
-
-task code: T025
-task type: UI/Listing Detail
-description: Listing detail page — gallery, specs, inspection slots, pricing area.
-tools: React components, Supabase queries
-references: matex_full_task_list.csv (T025), project_rules.md
-status: todo
-start date:
-end date:
-
-task code: T026
-task type: DB/Search
-description: Search & FTS — add Postgres full-text search and search UI.
-tools: Postgres FTS, Next.js, server-side indexing
-references: matex_full_task_list.csv (T026), project_rules.md
-status: todo
-start date:
-end date:
-
-Phase: 5 — Auctions
-
-task code: T027
-task type: Domain/Helpers
-description: Auction helpers — compute isActive, timeLeft, currentHighBid, minNextBid using settings.
-tools: TypeScript helpers, Zod for schemas
-references: matex_full_task_list.csv (T027), project_rules.md
-status: todo
-start date:
-end date:
-
-task code: T028
-task type: API/Auction
-description: POST /api/auctions/[id]/bid — validate auction active, deposit authorized, amount >= minNextBid; extend soft-close if needed.
-tools: Next.js API route, Supabase transactions, Zod
-references: matex_full_task_list.csv (T028), project_rules.md
-status: todo
-start date:
-end date:
-
-task code: T029
-task type: Realtime
-description: Realtime bids subscription — use Supabase Realtime to stream bids and update UI.
-tools: Supabase Realtime, client subscriptions
-references: matex_full_task_list.csv (T029), project_rules.md
-status: todo
-start date:
-end date:
-
-task code: T030
-task type: Notifications
-description: Outbid notifications — notify previous highest bidder via in-app/email when outbid.
-tools: notifications subsystem, Nodemailer stub
-references: matex_full_task_list.csv (T030), project_rules.md
-status: todo
-start date:
-end date:
-
-Phase: 6 — Inspections
-
-task code: T031
-task type: UI/Inspections
-description: Manage inspection slots (seller) — seller can add/remove slots with capacity and buffer validation.
-tools: server actions, DB migrations
-references: matex_full_task_list.csv (T031), project_rules.md
-status: todo
-start date:
-end date:
-
-task code: T032
-task type: Booking
-description: Book/cancel inspection (buyer) — booking logic, capacity checks, notifications.
-tools: Supabase transactions, UI
-references: matex_full_task_list.csv (T032), project_rules.md
-status: todo
-start date:
-end date:
-
-task code: T033
-task type: Notifications/Scheduler
-description: Inspection reminders — send reminders before slots via in-app/email (configurable in settings).
-tools: scheduler/cron, notifications system
-references: matex_full_task_list.csv (T033), project_rules.md
-status: todo
-start date:
-end date:
-
-Phase: 7 — Deposits
-
-task code: T034
-task type: Payments/Stripe
-description: Stripe client setup — create lib/stripe.ts and load keys from ENV; show test mode on UI.
-tools: Stripe SDK, ENV variables
-references: matex_full_task_list.csv (T034), project_rules.md
-status: todo
-start date:
-end date:
-
-task code: T035
-task type: API/Deposits
-description: Authorize deposit — POST /api/deposits/authorize to create PaymentIntent and link to user+auction.
-tools: Stripe PaymentIntent, server APIs
-references: matex_full_task_list.csv (T035), project_rules.md
-status: todo
-start date:
-end date:
-
-task code: T036
-task type: Payments/Release
-description: Release/refund deposits — capture winner deposit, refund others; scheduled job or server action.
-tools: Stripe API, server jobs
-references: matex_full_task_list.csv (T036), project_rules.md
-status: todo
-start date:
-end date:
-
-task code: T037
-task type: UI/Deposits
-description: Deposit status UI — show deposit status in auction page with badges and CTA.
-tools: React components, Supabase queries
-references: matex_full_task_list.csv (T037), project_rules.md
-status: todo
-start date:
-end date:
-
-Phase: 8 — Payments
-
-task code: T038
-task type: Checkout
-description: Fixed price checkout — Stripe Checkout for fixed listings, create pending order and success/cancel pages.
-tools: Stripe Checkout, server API, Next.js pages
-references: matex_full_task_list.csv (T038), project_rules.md
-status: todo
-start date:
-end date:
-
-task code: T039
-task type: Invoicing
-description: Auction winner invoice — on auction close, create order, deduct deposit, create PaymentIntent for remaining balance.
-tools: server jobs, Stripe, orders DB
-references: matex_full_task_list.csv (T039), project_rules.md
-status: todo
-start date:
-end date:
-
-task code: T040
-task type: Webhooks
-description: Stripe webhooks — implement webhook handler and verify signature to update orders.
-tools: Stripe webhooks, Next.js API, secret in ENV
-references: matex_full_task_list.csv (T040), project_rules.md
-status: todo
-start date:
-end date:
-
-task code: T041
-task type: Payments/Admin
-description: Payout delay & fees — apply platform fees and payout delay from settings; reflect in order summary.
-tools: DB calculations, admin settings
-references: matex_full_task_list.csv (T041), project_rules.md
-status: todo
-start date:
-end date:
-
-Phase: 9 — Notifications
-
-task code: T042
-task type: UI/Notifications
-description: Bell dropdown UI — navbar bell with unread count and dropdown; notifications page and mark-as-read.
-tools: React components, Supabase queries
-references: matex_full_task_list.csv (T042), project_rules.md
-status: todo
-start date:
-end date:
-
-task code: T043
-task type: Triggers
-description: Notification triggers — helpers to insert notifications on events (new bid, outbid, auction won, inspection booked, deposit authorized).
-tools: server helpers, DB inserts
-references: matex_full_task_list.csv (T043), project_rules.md
-status: todo
-start date:
-end date:
-
-task code: T044
-task type: Email
-description: Email renderer — render email templates from DB, compile markdown with templating, send via nodemailer stub.
-tools: Nodemailer (stub), markdown renderer, template engine
-references: matex_full_task_list.csv (T044), project_rules.md
-status: todo
-start date:
-end date:
-
-task code: T045
-task type: Preferences
-description: User preferences — notification preferences page to toggle channels and digest frequency.
-tools: UI forms, DB storage
-references: matex_full_task_list.csv (T045), project_rules.md
-status: todo
-start date:
-end date:
-
-Phase: 10 — Admin
-
-task code: T046
-task type: Admin
-description: Admin route guard — protect /admin routes, require profiles.role='admin'.
-tools: middleware, auth checks
-references: matex_full_task_list.csv (T046), project_rules.md
-status: todo
-start date:
-end date:
-
-task code: T047
-task type: Admin/Settings
-description: Settings editor UI — CRUD editor for auction, fees, legal, inspection, notifications with validation and cache bust.
-tools: JSON editor, server APIs, validation (Zod)
-references: matex_full_task_list.csv (T047), project_rules.md
-status: todo
-start date:
-end date:
-
-task code: T048
-task type: Admin/KYC
-description: KYC manager — approve/reject KYC with notes and notify users; preview documents.
-tools: admin UI, storage preview
-references: matex_full_task_list.csv (T048), project_rules.md
-status: todo
-start date:
-end date:
-
-task code: T049
-task type: Admin/Moderation
-description: Listings moderation — moderation UI, bulk operations, inspections overview.
-tools: admin UI, DB queries
-references: matex_full_task_list.csv (T049), project_rules.md
-status: todo
-start date:
-end date:
-
-task code: T050
-task type: Admin/Payments
-description: Payments & deposits dashboard — show authorized/captured/refunded deposits and orders; manual refund with audit.
-tools: admin UI, Stripe APIs
-references: matex_full_task_list.csv (T050), project_rules.md
-status: todo
-start date:
-end date:
-
-task code: T051
-task type: Admin/Templates
-description: Notification templates CMS — CRUD for templates with preview and variable docs.
-tools: admin UI, markdown editor
-references: matex_full_task_list.csv (T051), project_rules.md
-status: todo
-start date:
-end date:
-
-task code: T052
-task type: Admin/Legal
-description: Legal CMS (Terms/Privacy) — editable markdown for Terms & Privacy; publish version to app_settings and force re-accept on change.
-tools: markdown editor, DB app_settings
-references: matex_full_task_list.csv (T052), project_rules.md
-status: todo
-start date:
-end date:
-
-task code: T053
-task type: Admin/Audit
-description: Audit log viewer — add viewer with filters by actor, action and date range.
-tools: admin UI, DB queries
-references: matex_full_task_list.csv (T053), project_rules.md
-status: todo
-start date:
-end date:
-
-Phase: 11 — UX & Identity
-
-task code: T054
-task type: UI/Brand
-description: Brand theme & favicon — apply Tailwind brand variables, load Inter, add favicon and navbar logo.
-tools: TailwindCSS, font loading, image assets
-references: matex_full_task_list.csv (T054), project_rules.md, docs/LOGO.md
-status: todo
-start date:
-end date:
-
-task code: T055
-task type: UI/Landing
-description: Landing hero + CTA — hero section with CTA and 3-step how-it-works.
-tools: React, Tailwind
-references: matex_full_task_list.csv (T055), project_rules.md
-status: todo
-start date:
-end date:
-
-task code: T056
-task type: UI/Filters
-description: Browse filters & URL state — filters synced to URLSearchParams with SSR results.
-tools: URLSearchParams, server-side rendering
-references: matex_full_task_list.csv (T056), project_rules.md
-status: todo
-start date:
-end date:
-
-task code: T057
-task type: UI/States
-description: Error/empty states — add 404/500 pages and empty-state components.
-tools: React components, error handling
-references: matex_full_task_list.csv (T057), project_rules.md
-status: todo
-start date:
-end date:
-
-task code: T058
-task type: UI/Loading
-description: Loading & skeletons — skeleton loaders and spinners for cards/tables.
-tools: CSS animations, components
-references: matex_full_task_list.csv (T058), project_rules.md
-status: todo
-start date:
-end date:
-
-Phase: 12 — Data & Analytics
-
-task code: T059
-task type: Analytics
-description: Price trend charts — aggregate historical winning bids by material and render line charts client-side.
-tools: DB aggregation, chart library (e.g., Chart.js, Recharts)
-references: matex_full_task_list.csv (T059), project_rules.md
-status: todo
-start date:
-end date:
-
-task code: T060
-task type: Analytics
-description: Trading volume tiles — dashboard KPIs: active auctions, weekly volume, new sellers, returning buyers.
-tools: server aggregation, caching
-references: matex_full_task_list.csv (T060), project_rules.md
-status: todo
-start date:
-end date:
-
-task code: T061
-task type: Analytics
-description: Seller reputation score — compute score from fulfilment metrics and show badge on profile.
-tools: background jobs, DB queries
-references: matex_full_task_list.csv (T061), project_rules.md
-status: todo
-start date:
-end date:
-
-task code: T062
-task type: Reporting
-description: Export reports CSV — admin can export price/volume reports as streamed CSV responses.
-tools: server streams, CSV writer
-references: matex_full_task_list.csv (T062), project_rules.md
-status: todo
-start date:
-end date:
-
-Phase: 13 — Legal & Compliance
-
-task code: T063
-task type: Legal
-description: Legal pages (Terms/Privacy/Refund) — add markdown pages and link in footer.
-tools: markdown pages, routing
-references: matex_full_task_list.csv (T063), project_rules.md
-status: todo
-start date:
-end date:
-
-task code: T064
-task type: Legal/Enforcement
-description: Consent gating before bid — enforce latest terms acceptance before POST /bid or /deposit.
-tools: middleware, DB checks
-references: matex_full_task_list.csv (T064), project_rules.md
-status: todo
-start date:
-end date:
-
-task code: T065
-task type: Legal/Policy
-description: Privacy & data retention — document retention policy for bids, orders and KYC documents.
-tools: docs, admin settings
-references: matex_full_task_list.csv (T065), project_rules.md
-status: todo
-start date:
-end date:
-
-task code: T066
-task type: Legal/UX
-description: Cookie banner — add consent banner with analytics toggle and store choice.
-tools: client UI, cookie/localStorage
-references: matex_full_task_list.csv (T066), project_rules.md
-status: todo
-start date:
-end date:
-
-Phase: 14 — QA/Security/Perf
-
-task code: T067
-task type: Security
-description: Rate limits for APIs — add per-IP rate limiter for write endpoints (bid, deposit, checkout, settings).
-tools: in-memory or Upstash rate limiter, middleware
-references: matex_full_task_list.csv (T067), project_rules.md
-status: todo
-start date:
-end date:
-
-task code: T068
-task type: Validation
-description: Zod validation — add Zod schemas for listing, bid, inspection, settings and return typed errors.
-tools: Zod, TypeScript
-references: matex_full_task_list.csv (T068), project_rules.md
-status: todo
-start date:
-end date:
-
-task code: T069
-task type: Security/RLS
-description: RLS policy review — audit all RLS to ensure least privilege and PII protection.
-tools: DB audit scripts, policies review
-references: matex_full_task_list.csv (T069), project_rules.md
-status: todo
-start date:
-end date:
-
-task code: T070
-task type: Accessibility
-description: Accessibility pass — improve ARIA, contrast, keyboard navigation and add skip-to-content link.
-tools: accessibility audits, Lighthouse, components
-references: matex_full_task_list.csv (T070), project_rules.md
-status: todo
-start date:
-end date:
-
-task code: T071
-task type: QA
-description: Manual E2E checklist — write a manual E2E flow for signup through fulfilment for testing.
-tools: docs, checklist
-references: matex_full_task_list.csv (T071), project_rules.md
-status: todo
-start date:
-end date:
-
-Phase: 15 — Deployment
-
-task code: T072
-task type: Ops/Vercel
-description: Vercel config — add vercel.json and map environment variables for production.
-tools: Vercel config, environment mapping
-references: matex_full_task_list.csv (T072), project_rules.md
-status: todo
-start date:
-end date:
-
-task code: T073
-task type: Ops/Supabase
-description: Supabase production setup — connect to production Supabase and run migrations; verify RLS and storage buckets.
-tools: Supabase dashboard, migrations
-references: matex_full_task_list.csv (T073), project_rules.md
-status: todo
-start date:
-end date:
-
-task code: T074
-task type: Ops/Stripe
-description: Stripe webhooks (prod) — configure Stripe webhooks in production and test payment events end-to-end.
-tools: Stripe dashboard, webhook registration
-references: matex_full_task_list.csv (T074), project_rules.md
-status: todo
-start date:
-end date:
-
-task code: T075
-task type: Ops/Domain
-description: Custom domain & SSL — configure DNS, force HTTPS, add security headers (HSTS).
-tools: DNS provider, hosting (Vercel)
-references: matex_full_task_list.csv (T075), project_rules.md
-status: todo
-start date:
-end date:
-
-task code: T076
-task type: Release
-description: Release tag v0.1.0 — create CHANGELOG entry and tag repo `v0.1.0`.
-tools: git tag, changelog
-references: matex_full_task_list.csv (T076), project_rules.md
-status: todo
-start date:
-end date:
-
----
+Tests:
+- (unit/integration/manual checks)
 
 Notes:
-- This file mirrors the CSV order and follows `project_rules.md` (one task at a time).
-- I can update a task entry with `status`, `start date`, `end date`, and `test status` as you begin work on it.
+- (optional notes)
 
----
+### T002 — VS Code workspace & settings
 
-If you'd like, I will: create a branch `chore/tasklist-md`, commit this file, and push it (follow Git Rules). I can also open a PR and set the first task `T001` as next actionable item and create `chore/init` branch to start scaffolding.
+Phase: Phase 0 â€” Pre-flight
+Description: Add .vscode/extensions.json recommending: GitHub Copilot, ESLint, Prettier, Tailwind CSS IntelliSense, EditorConfig, dotenv. Add .vscode/settings.json to format on save with Prettier and tailwind class sorting.
 
-Updated: (update these fields as work proceeds)
+Files changed:
+- (list files changed; update when implementing)
+
+DB changes:
+- (describe schema/migrations if any)
+
+API endpoints:
+- (list endpoints, method, request/response)
+
+Tests:
+- (unit/integration/manual checks)
+
+Notes:
+- (optional notes)
+
+### T003 — EditorConfig + Prettier
+
+Phase: Phase 0 â€” Pre-flight
+Description: Create .editorconfig and .prettierrc. Enforce 2 spaces, LF, single quotes, Prettier integration for TS/JS/MD/JSON.
+
+Files changed:
+- (list files changed; update when implementing)
+
+DB changes:
+- (describe schema/migrations if any)
+
+API endpoints:
+- (list endpoints, method, request/response)
+
+Tests:
+- (unit/integration/manual checks)
+
+Notes:
+- (optional notes)
+
+### T004 — Env templates
+
+Phase: Phase 0 â€” Pre-flight
+Description: Add .env.example with NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY, STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET.
+
+Files changed:
+- (list files changed; update when implementing)
+
+DB changes:
+- (describe schema/migrations if any)
+
+API endpoints:
+- (list endpoints, method, request/response)
+
+Tests:
+- (unit/integration/manual checks)
+
+Notes:
+- (optional notes)
+
+### T005 — Supabase client helpers
+
+Phase: Phase 1 â€” Supabase
+Description: Create lib/supabaseServer.ts and lib/supabaseClient.ts using @supabase/supabase-js for server (service role) and client (anon key).
+
+Files changed:
+- (list files changed; update when implementing)
+
+DB changes:
+- (describe schema/migrations if any)
+
+API endpoints:
+- (list endpoints, method, request/response)
+
+Tests:
+- (unit/integration/manual checks)
+
+Notes:
+- (optional notes)
+
+### T006 — Profiles + RBAC schema
+
+Phase: Phase 1 â€” Supabase
+Description: SQL migration for profiles(id uuid pk refs auth.users, full_name, phone, role enum buyer|seller|both|admin, kyc_status enum, company_name, created_at). Enable RLS: users read/update own; admins all.
+
+Files changed:
+- (list files changed; update when implementing)
+
+DB changes:
+- (describe schema/migrations if any)
+
+API endpoints:
+- (list endpoints, method, request/response)
+
+Tests:
+- (unit/integration/manual checks)
+
+Notes:
+- (optional notes)
+
+### T007 — Listings + Images schema
+
+Phase: Phase 1 â€” Supabase
+Description: Create listings(id, seller_id, title, description, material, condition, quantity numeric, unit, pricing_type fixed|auction, price_cad, buy_now_cad, location_city, location_province, status, created_at) and listing_images(listing_id,url,sort_order). RLS: seller CRUD own; public read active.
+
+Files changed:
+- (list files changed; update when implementing)
+
+DB changes:
+- (describe schema/migrations if any)
+
+API endpoints:
+- (list endpoints, method, request/response)
+
+Tests:
+- (unit/integration/manual checks)
+
+Notes:
+- (optional notes)
+
+### T008 — Auctions & Bids schema
+
+Phase: Phase 1 â€” Supabase
+Description: Create auctions(listing_id unique, start_at, end_at, min_increment_cad, soft_close_seconds) and bids(auction_id, bidder_id, amount_cad, created_at). Indexes on auction_id, created_at.
+
+Files changed:
+- (list files changed; update when implementing)
+
+DB changes:
+- (describe schema/migrations if any)
+
+API endpoints:
+- (list endpoints, method, request/response)
+
+Tests:
+- (unit/integration/manual checks)
+
+Notes:
+- (optional notes)
+
+### T009 — Orders schema
+
+Phase: Phase 1 â€” Supabase
+Description: Create orders(listing_id, buyer_id, seller_id, type fixed|auction, total_cad, status pending|paid|cancelled|fulfilled, stripe_payment_intent, created_at). RLS buyer/seller/admin.
+
+Files changed:
+- (list files changed; update when implementing)
+
+DB changes:
+- (describe schema/migrations if any)
+
+API endpoints:
+- (list endpoints, method, request/response)
+
+Tests:
+- (unit/integration/manual checks)
+
+Notes:
+- (optional notes)
+
+### T010 — Inspections schema
+
+Phase: Phase 1 â€” Supabase
+Description: Create inspections(listing_id, slot_at timestamptz, capacity int) and inspection_bookings(inspection_id, user_id, status booked|attended|no_show|cancelled, booked_at).
+
+Files changed:
+- (list files changed; update when implementing)
+
+DB changes:
+- (describe schema/migrations if any)
+
+API endpoints:
+- (list endpoints, method, request/response)
+
+Tests:
+- (unit/integration/manual checks)
+
+Notes:
+- (optional notes)
+
+### T011 — App settings schema
+
+Phase: Phase 1 â€” Supabase
+Description: Create app_settings(key text pk, value jsonb, updated_by, updated_at) and kyc_fields(role seller|buyer, name, label, type text|number|date|file|select, required, options jsonb, sort_order).
+
+Files changed:
+- (list files changed; update when implementing)
+
+DB changes:
+- (describe schema/migrations if any)
+
+API endpoints:
+- (list endpoints, method, request/response)
+
+Tests:
+- (unit/integration/manual checks)
+
+Notes:
+- (optional notes)
+
+### T012 — Notifications schema
+
+Phase: Phase 1 â€” Supabase
+Description: Create notification_templates(code unique, channel inapp|email|sms, subject, body_md, is_active, updated_at) and notifications(user_id, type info|warning|success|error, title, message, link, is_read, created_at).
+
+Files changed:
+- (list files changed; update when implementing)
+
+DB changes:
+- (describe schema/migrations if any)
+
+API endpoints:
+- (list endpoints, method, request/response)
+
+Tests:
+- (unit/integration/manual checks)
+
+Notes:
+- (optional notes)
+
+### T013 — Terms acceptances
+
+Phase: Phase 1 â€” Supabase
+Description: Create terms_acceptances(user_id, terms_version text, accepted_at). RLS: user reads own, admin all.
+
+Files changed:
+- (list files changed; update when implementing)
+
+DB changes:
+- (describe schema/migrations if any)
+
+API endpoints:
+- (list endpoints, method, request/response)
+
+Tests:
+- (unit/integration/manual checks)
+
+Notes:
+- (optional notes)
+
+### T014 — Commit migrations
+
+Phase: Phase 1 â€” Supabase
+Description: Export SQL migration files and commit to repo, ensuring idempotent scripts.
+
+Files changed:
+- (list files changed; update when implementing)
+
+DB changes:
+- (describe schema/migrations if any)
+
+API endpoints:
+- (list endpoints, method, request/response)
+
+Tests:
+- (unit/integration/manual checks)
+
+Notes:
+- (optional notes)
+
+### T015 — GET /api/settings
+
+Phase: Phase 2 â€” Settings
+Description: Implement /app/api/settings/route.ts: accept ?keys=a,b,c and return merged JSON from app_settings with 3-min in-memory cache; server-only with service role.
+
+Files changed:
+- (list files changed; update when implementing)
+
+DB changes:
+- (describe schema/migrations if any)
+
+API endpoints:
+- (list endpoints, method, request/response)
+
+Tests:
+- (unit/integration/manual checks)
+
+Notes:
+- (optional notes)
+
+### T016 — POST /api/settings (admin)
+
+Phase: Phase 2 â€” Settings
+Description: Upsert multiple settings keys atomically; invalidate cache; admin role required; return updated keys.
+
+Files changed:
+- (list files changed; update when implementing)
+
+DB changes:
+- (describe schema/migrations if any)
+
+API endpoints:
+- (list endpoints, method, request/response)
+
+Tests:
+- (unit/integration/manual checks)
+
+Notes:
+- (optional notes)
+
+### T017 — Seed default settings
+
+Phase: Phase 2 â€” Settings
+Description: Seed auction.soft_close_seconds=120, auction.min_increment_strategy='fixed', auction.min_increment_value=5, auction.deposit_required=true, auction.deposit_percent=0.1, fees.transaction_percent=0.04, notifications.channels=['inapp','email'].
+
+Files changed:
+- (list files changed; update when implementing)
+
+DB changes:
+- (describe schema/migrations if any)
+
+API endpoints:
+- (list endpoints, method, request/response)
+
+Tests:
+- (unit/integration/manual checks)
+
+Notes:
+- (optional notes)
+
+### T018 — Audit log table
+
+Phase: Phase 2 â€” Settings
+Description: Create audit_log(id, actor_id, action, before jsonb, after jsonb, created_at). Write helper to log settings changes.
+
+Files changed:
+- (list files changed; update when implementing)
+
+DB changes:
+- (describe schema/migrations if any)
+
+API endpoints:
+- (list endpoints, method, request/response)
+
+Tests:
+- (unit/integration/manual checks)
+
+Notes:
+- (optional notes)
+
+### T019 — Auth wiring (server/client)
+
+Phase: Phase 3 â€” Auth & KYC
+Description: Create auth utilities to read session server-side and client-side; redirect unauthenticated users for protected routes.
+
+Files changed:
+- (list files changed; update when implementing)
+
+DB changes:
+- (describe schema/migrations if any)
+
+API endpoints:
+- (list endpoints, method, request/response)
+
+Tests:
+- (unit/integration/manual checks)
+
+Notes:
+- (optional notes)
+
+### T020 — Dynamic onboarding (Buyer/Seller)
+
+Phase: Phase 3 â€” Auth & KYC
+Description: Add /onboarding/{buyer|seller} reading kyc_fields from DB to render dynamic forms with validation and file upload to storage.
+
+Files changed:
+- (list files changed; update when implementing)
+
+DB changes:
+- (describe schema/migrations if any)
+
+API endpoints:
+- (list endpoints, method, request/response)
+
+Tests:
+- (unit/integration/manual checks)
+
+Notes:
+- (optional notes)
+
+### T021 — KYC upload & review status
+
+Phase: Phase 3 â€” Auth & KYC
+Description: Implement document upload (ID/business license), store metadata, show 'pending/approved/rejected' on profile.
+
+Files changed:
+- (list files changed; update when implementing)
+
+DB changes:
+- (describe schema/migrations if any)
+
+API endpoints:
+- (list endpoints, method, request/response)
+
+Tests:
+- (unit/integration/manual checks)
+
+Notes:
+- (optional notes)
+
+### T022 — Terms consent gate
+
+Phase: Phase 3 â€” Auth & KYC
+Description: Add modal to accept latest terms_version from app_settings; store record in terms_acceptances; block actions until accepted.
+
+Files changed:
+- (list files changed; update when implementing)
+
+DB changes:
+- (describe schema/migrations if any)
+
+API endpoints:
+- (list endpoints, method, request/response)
+
+Tests:
+- (unit/integration/manual checks)
+
+Notes:
+- (optional notes)
+
+### T023 — Create listing UI
+
+Phase: Phase 4 â€” Listings
+Description: Build /sell/new with title, material, qty, unit, pricing_type fixed|auction, price, location, images. Upload to Supabase Storage.
+
+Files changed:
+- (list files changed; update when implementing)
+
+DB changes:
+- (describe schema/migrations if any)
+
+API endpoints:
+- (list endpoints, method, request/response)
+
+Tests:
+- (unit/integration/manual checks)
+
+Notes:
+- (optional notes)
+
+### T024 — Browse listings page
+
+Phase: Phase 4 â€” Listings
+Description: Implement /browse with filters (material, price range, type, location). SSR data with pagination.
+
+Files changed:
+- (list files changed; update when implementing)
+
+DB changes:
+- (describe schema/migrations if any)
+
+API endpoints:
+- (list endpoints, method, request/response)
+
+Tests:
+- (unit/integration/manual checks)
+
+Notes:
+- (optional notes)
+
+### T025 — Listing detail page
+
+Phase: Phase 4 â€” Listings
+Description: Show gallery, specs, seller card, inspection slots, pricing area (buy now / bid).
+
+Files changed:
+- (list files changed; update when implementing)
+
+DB changes:
+- (describe schema/migrations if any)
+
+API endpoints:
+- (list endpoints, method, request/response)
+
+Tests:
+- (unit/integration/manual checks)
+
+Notes:
+- (optional notes)
+
+### T026 — Search & FTS
+
+Phase: Phase 4 â€” Listings
+Description: Add Postgres FTS on title/description/material; implement search bar and highlight matches.
+
+Files changed:
+- (list files changed; update when implementing)
+
+DB changes:
+- (describe schema/migrations if any)
+
+API endpoints:
+- (list endpoints, method, request/response)
+
+Tests:
+- (unit/integration/manual checks)
+
+Notes:
+- (optional notes)
+
+### T027 — Auction helpers
+
+Phase: Phase 5 â€” Auctions
+Description: Compute isActive, timeLeft, currentHighBid, minNextBid (fixed or percent) from settings.
+
+Files changed:
+- (list files changed; update when implementing)
+
+DB changes:
+- (describe schema/migrations if any)
+
+API endpoints:
+- (list endpoints, method, request/response)
+
+Tests:
+- (unit/integration/manual checks)
+
+Notes:
+- (optional notes)
+
+### T028 — POST /api/auctions/[id]/bid
+
+Phase: Phase 5 â€” Auctions
+Description: Validate auction active, user deposit authorized, amount >= minNextBid. Insert bid. If remaining <= soft_close_seconds, extend end_at. Return new state.
+
+Files changed:
+- (list files changed; update when implementing)
+
+DB changes:
+- (describe schema/migrations if any)
+
+API endpoints:
+- (list endpoints, method, request/response)
+
+Tests:
+- (unit/integration/manual checks)
+
+Notes:
+- (optional notes)
+
+### T029 — Realtime bids subscription
+
+Phase: Phase 5 â€” Auctions
+Description: Subscribe to bids by auction_id; update current price and history live; optimistic UI on place bid.
+
+Files changed:
+- (list files changed; update when implementing)
+
+DB changes:
+- (describe schema/migrations if any)
+
+API endpoints:
+- (list endpoints, method, request/response)
+
+Tests:
+- (unit/integration/manual checks)
+
+Notes:
+- (optional notes)
+
+### T030 — Outbid notifications
+
+Phase: Phase 5 â€” Auctions
+Description: On new highest bid, notify previous highest bidder via in-app/email using notification_templates.
+
+Files changed:
+- (list files changed; update when implementing)
+
+DB changes:
+- (describe schema/migrations if any)
+
+API endpoints:
+- (list endpoints, method, request/response)
+
+Tests:
+- (unit/integration/manual checks)
+
+Notes:
+- (optional notes)
+
+### T031 — Manage inspection slots (seller)
+
+Phase: Phase 6 â€” Inspections
+Description: Seller can add/remove slots with capacity and buffers from settings; validate time overlaps.
+
+Files changed:
+- (list files changed; update when implementing)
+
+DB changes:
+- (describe schema/migrations if any)
+
+API endpoints:
+- (list endpoints, method, request/response)
+
+Tests:
+- (unit/integration/manual checks)
+
+Notes:
+- (optional notes)
+
+### T032 — Book/cancel inspection (buyer)
+
+Phase: Phase 6 â€” Inspections
+Description: Allow booking if capacity available; prevent duplicates; show upcoming visits; notify buyer & seller.
+
+Files changed:
+- (list files changed; update when implementing)
+
+DB changes:
+- (describe schema/migrations if any)
+
+API endpoints:
+- (list endpoints, method, request/response)
+
+Tests:
+- (unit/integration/manual checks)
+
+Notes:
+- (optional notes)
+
+### T033 — Inspection reminders
+
+Phase: Phase 6 â€” Inspections
+Description: Send reminders X hours before slot time (configurable in settings) via in-app/email.
+
+Files changed:
+- (list files changed; update when implementing)
+
+DB changes:
+- (describe schema/migrations if any)
+
+API endpoints:
+- (list endpoints, method, request/response)
+
+Tests:
+- (unit/integration/manual checks)
+
+Notes:
+- (optional notes)
+
+### T034 — Stripe client setup
+
+Phase: Phase 7 â€” Deposits
+Description: Create lib/stripe.ts; load keys from env; add test mode indicator on UI.
+
+Files changed:
+- (list files changed; update when implementing)
+
+DB changes:
+- (describe schema/migrations if any)
+
+API endpoints:
+- (list endpoints, method, request/response)
+
+Tests:
+- (unit/integration/manual checks)
+
+Notes:
+- (optional notes)
+
+### T035 — Authorize deposit
+
+Phase: Phase 7 â€” Deposits
+Description: Authorize deposit (percent or flat from settings) using PaymentIntent with capture later; link to user+auction; gate bidding.
+
+Files changed:
+- (list files changed; update when implementing)
+
+DB changes:
+- (describe schema/migrations if any)
+
+API endpoints:
+- (list endpoints, method, request/response)
+
+Tests:
+- (unit/integration/manual checks)
+
+Notes:
+- (optional notes)
+
+### T036 — Release/refund deposits
+
+Phase: Phase 7 â€” Deposits
+Description: On auction close, capture winner deposit (apply to invoice) and cancel others; implement cron/server action.
+
+Files changed:
+- (list files changed; update when implementing)
+
+DB changes:
+- (describe schema/migrations if any)
+
+API endpoints:
+- (list endpoints, method, request/response)
+
+Tests:
+- (unit/integration/manual checks)
+
+Notes:
+- (optional notes)
+
+### T037 — Deposit status UI
+
+Phase: Phase 7 â€” Deposits
+Description: Show 'Deposit required/authorized' badges and CTA to authorize deposit before bidding.
+
+Files changed:
+- (list files changed; update when implementing)
+
+DB changes:
+- (describe schema/migrations if any)
+
+API endpoints:
+- (list endpoints, method, request/response)
+
+Tests:
+- (unit/integration/manual checks)
+
+Notes:
+- (optional notes)
+
+### T038 — Fixed price checkout
+
+Phase: Phase 8 â€” Payments
+Description: Create /api/checkout/fixed to create Checkout Session; create pending order; success/cancel pages and status updates.
+
+Files changed:
+- (list files changed; update when implementing)
+
+DB changes:
+- (describe schema/migrations if any)
+
+API endpoints:
+- (list endpoints, method, request/response)
+
+Tests:
+- (unit/integration/manual checks)
+
+Notes:
+- (optional notes)
+
+### T039 — Auction winner invoice
+
+Phase: Phase 8 â€” Payments
+Description: When auction closes, create order with total = winning bid; deduct deposit; create remaining balance PaymentIntent.
+
+Files changed:
+- (list files changed; update when implementing)
+
+DB changes:
+- (describe schema/migrations if any)
+
+API endpoints:
+- (list endpoints, method, request/response)
+
+Tests:
+- (unit/integration/manual checks)
+
+Notes:
+- (optional notes)
+
+### T040 — Stripe webhooks
+
+Phase: Phase 8 â€” Payments
+Description: Add /api/stripe/webhook verifying signature; handle checkout.session.completed and payment_intent.succeeded; update orders.
+
+Files changed:
+- (list files changed; update when implementing)
+
+DB changes:
+- (describe schema/migrations if any)
+
+API endpoints:
+- (list endpoints, method, request/response)
+
+Tests:
+- (unit/integration/manual checks)
+
+Notes:
+- (optional notes)
+
+### T041 — Payout delay & fees
+
+Phase: Phase 8 â€” Payments
+Description: Apply fees.transaction_percent; set payout delay days from settings; reflect in order summary.
+
+Files changed:
+- (list files changed; update when implementing)
+
+DB changes:
+- (describe schema/migrations if any)
+
+API endpoints:
+- (list endpoints, method, request/response)
+
+Tests:
+- (unit/integration/manual checks)
+
+Notes:
+- (optional notes)
+
+### T042 — Bell dropdown UI
+
+Phase: Phase 9 â€” Notifications
+Description: Navbar bell with unread count; dropdown last 10; /notifications list with pagination; mark-as-read.
+
+Files changed:
+- (list files changed; update when implementing)
+
+DB changes:
+- (describe schema/migrations if any)
+
+API endpoints:
+- (list endpoints, method, request/response)
+
+Tests:
+- (unit/integration/manual checks)
+
+Notes:
+- (optional notes)
+
+### T043 — Notification triggers
+
+Phase: Phase 9 â€” Notifications
+Description: Server helpers to insert notifications on: new bid, outbid, auction won, inspection booked, deposit authorized.
+
+Files changed:
+- (list files changed; update when implementing)
+
+DB changes:
+- (describe schema/migrations if any)
+
+API endpoints:
+- (list endpoints, method, request/response)
+
+Tests:
+- (unit/integration/manual checks)
+
+Notes:
+- (optional notes)
+
+### T044 — Email renderer
+
+Phase: Phase 9 â€” Notifications
+Description: Compile body_md with simple templating (Handlebars-like); send via nodemailer (stub provider).
+
+Files changed:
+- (list files changed; update when implementing)
+
+DB changes:
+- (describe schema/migrations if any)
+
+API endpoints:
+- (list endpoints, method, request/response)
+
+Tests:
+- (unit/integration/manual checks)
+
+Notes:
+- (optional notes)
+
+### T045 — User preferences
+
+Phase: Phase 9 â€” Notifications
+Description: Settings page to toggle channels (inapp/email/sms) and digest frequency; store in app_settings or per-user table.
+
+Files changed:
+- (list files changed; update when implementing)
+
+DB changes:
+- (describe schema/migrations if any)
+
+API endpoints:
+- (list endpoints, method, request/response)
+
+Tests:
+- (unit/integration/manual checks)
+
+Notes:
+- (optional notes)
+
+### T046 — Admin route guard
+
+Phase: Phase 10 â€” Admin
+Description: Protect /admin routes; only profiles.role='admin' can access; add layout with sidebar nav.
+
+Files changed:
+- (list files changed; update when implementing)
+
+DB changes:
+- (describe schema/migrations if any)
+
+API endpoints:
+- (list endpoints, method, request/response)
+
+Tests:
+- (unit/integration/manual checks)
+
+Notes:
+- (optional notes)
+
+### T047 — Settings editor UI
+
+Phase: Phase 10 â€” Admin
+Description: CRUD editor for auction, fees, legal, inspection, notifications; JSON editor with validation and save + cache bust.
+
+Files changed:
+- (list files changed; update when implementing)
+
+DB changes:
+- (describe schema/migrations if any)
+
+API endpoints:
+- (list endpoints, method, request/response)
+
+Tests:
+- (unit/integration/manual checks)
+
+Notes:
+- (optional notes)
+
+### T048 — KYC manager
+
+Phase: Phase 10 â€” Admin
+Description: Table of profiles with kyc_status; preview documents; approve/reject with reason; notify user; log audit.
+
+Files changed:
+- (list files changed; update when implementing)
+
+DB changes:
+- (describe schema/migrations if any)
+
+API endpoints:
+- (list endpoints, method, request/response)
+
+Tests:
+- (unit/integration/manual checks)
+
+Notes:
+- (optional notes)
+
+### T049 — Listings moderation
+
+Phase: Phase 10 â€” Admin
+Description: Search/filter listings; toggle status; view associated inspections; bulk operations.
+
+Files changed:
+- (list files changed; update when implementing)
+
+DB changes:
+- (describe schema/migrations if any)
+
+API endpoints:
+- (list endpoints, method, request/response)
+
+Tests:
+- (unit/integration/manual checks)
+
+Notes:
+- (optional notes)
+
+### T050 — Payments & deposits
+
+Phase: Phase 10 â€” Admin
+Description: Show authorized/captured/refunded deposits; order status; manual refund with confirmation and audit trail.
+
+Files changed:
+- (list files changed; update when implementing)
+
+DB changes:
+- (describe schema/migrations if any)
+
+API endpoints:
+- (list endpoints, method, request/response)
+
+Tests:
+- (unit/integration/manual checks)
+
+Notes:
+- (optional notes)
+
+### T051 — Notification templates CMS
+
+Phase: Phase 10 â€” Admin
+Description: CRUD for notification_templates with preview and variables docs; simple versioning.
+
+Files changed:
+- (list files changed; update when implementing)
+
+DB changes:
+- (describe schema/migrations if any)
+
+API endpoints:
+- (list endpoints, method, request/response)
+
+Tests:
+- (unit/integration/manual checks)
+
+Notes:
+- (optional notes)
+
+### T052 — Legal CMS (Terms/Privacy)
+
+Phase: Phase 10 â€” Admin
+Description: Editable markdown for Terms/Privacy; publish version to app_settings; force re-accept when version changes.
+
+Files changed:
+- (list files changed; update when implementing)
+
+DB changes:
+- (describe schema/migrations if any)
+
+API endpoints:
+- (list endpoints, method, request/response)
+
+Tests:
+- (unit/integration/manual checks)
+
+Notes:
+- (optional notes)
+
+### T053 — Audit log viewer
+
+Phase: Phase 10 â€” Admin
+Description: Add audit log viewer with filters by actor, action, date range.
+
+Files changed:
+- (list files changed; update when implementing)
+
+DB changes:
+- (describe schema/migrations if any)
+
+API endpoints:
+- (list endpoints, method, request/response)
+
+Tests:
+- (unit/integration/manual checks)
+
+Notes:
+- (optional notes)
+
+### T054 — Brand theme & favicon
+
+Phase: Phase 11 â€” UX & Identity
+Description: Set Tailwind theme variables for brand palette; load Inter; add favicon and navbar logo; dark/light modes optional.
+
+Files changed:
+- (list files changed; update when implementing)
+
+DB changes:
+- (describe schema/migrations if any)
+
+API endpoints:
+- (list endpoints, method, request/response)
+
+Tests:
+- (unit/integration/manual checks)
+
+Notes:
+- (optional notes)
+
+### T055 — Landing hero + CTA
+
+Phase: Phase 11 â€” UX & Identity
+Description: Build hero section with headline/subhead, Start Selling CTA, and 3-step how it works; responsive.
+
+Files changed:
+- (list files changed; update when implementing)
+
+DB changes:
+- (describe schema/migrations if any)
+
+API endpoints:
+- (list endpoints, method, request/response)
+
+Tests:
+- (unit/integration/manual checks)
+
+Notes:
+- (optional notes)
+
+### T056 — Browse filters & URL state
+
+Phase: Phase 11 â€” UX & Identity
+Description: Implement filters (material, price, type, location) synced to URLSearchParams; SSR results and pagination.
+
+Files changed:
+- (list files changed; update when implementing)
+
+DB changes:
+- (describe schema/migrations if any)
+
+API endpoints:
+- (list endpoints, method, request/response)
+
+Tests:
+- (unit/integration/manual checks)
+
+Notes:
+- (optional notes)
+
+### T057 — Error/empty states
+
+Phase: Phase 11 â€” UX & Identity
+Description: Add 404/500 pages; components for empty listings/bids/notifications; friendly copy.
+
+Files changed:
+- (list files changed; update when implementing)
+
+DB changes:
+- (describe schema/migrations if any)
+
+API endpoints:
+- (list endpoints, method, request/response)
+
+Tests:
+- (unit/integration/manual checks)
+
+Notes:
+- (optional notes)
+
+### T058 — Loading & skeletons
+
+Phase: Phase 11 â€” UX & Identity
+Description: Add skeleton components for cards, tables; use animated shimmer; integrate spinner.gif.
+
+Files changed:
+- (list files changed; update when implementing)
+
+DB changes:
+- (describe schema/migrations if any)
+
+API endpoints:
+- (list endpoints, method, request/response)
+
+Tests:
+- (unit/integration/manual checks)
+
+Notes:
+- (optional notes)
+
+### T059 — Price trend charts
+
+Phase: Phase 12 â€” Data & Analytics
+Description: Aggregate historical winning bids by material per week; expose API; render line chart client-side with caching.
+
+Files changed:
+- (list files changed; update when implementing)
+
+DB changes:
+- (describe schema/migrations if any)
+
+API endpoints:
+- (list endpoints, method, request/response)
+
+Tests:
+- (unit/integration/manual checks)
+
+Notes:
+- (optional notes)
+
+### T060 — Trading volume tiles
+
+Phase: Phase 12 â€” Data & Analytics
+Description: Dashboard KPIs: active auctions, weekly volume, new sellers, returning buyers; server actions + caching.
+
+Files changed:
+- (list files changed; update when implementing)
+
+DB changes:
+- (describe schema/migrations if any)
+
+API endpoints:
+- (list endpoints, method, request/response)
+
+Tests:
+- (unit/integration/manual checks)
+
+Notes:
+- (optional notes)
+
+### T061 — Seller reputation score
+
+Phase: Phase 12 â€” Data & Analytics
+Description: Compute simple score based on fulfilment time, disputes, cancellations; show badge on seller profile.
+
+Files changed:
+- (list files changed; update when implementing)
+
+DB changes:
+- (describe schema/migrations if any)
+
+API endpoints:
+- (list endpoints, method, request/response)
+
+Tests:
+- (unit/integration/manual checks)
+
+Notes:
+- (optional notes)
+
+### T062 — Export reports CSV
+
+Phase: Phase 12 â€” Data & Analytics
+Description: Admin can export price/volume reports as CSV; streamed response.
+
+Files changed:
+- (list files changed; update when implementing)
+
+DB changes:
+- (describe schema/migrations if any)
+
+API endpoints:
+- (list endpoints, method, request/response)
+
+Tests:
+- (unit/integration/manual checks)
+
+Notes:
+- (optional notes)
+
+### T063 — Legal pages (Terms/Privacy/Refund)
+
+Phase: Phase 13 â€” Legal & Compliance
+Description: Add markdown pages reflecting Auctioneers Act/Consumer Protection and PIPEDA; link in footer.
+
+Files changed:
+- (list files changed; update when implementing)
+
+DB changes:
+- (describe schema/migrations if any)
+
+API endpoints:
+- (list endpoints, method, request/response)
+
+Tests:
+- (unit/integration/manual checks)
+
+Notes:
+- (optional notes)
+
+### T064 — Consent gating before bid
+
+Phase: Phase 13 â€” Legal & Compliance
+Description: Require latest terms_version before POST /bid or /deposit; show modal to accept; record acceptance.
+
+Files changed:
+- (list files changed; update when implementing)
+
+DB changes:
+- (describe schema/migrations if any)
+
+API endpoints:
+- (list endpoints, method, request/response)
+
+Tests:
+- (unit/integration/manual checks)
+
+Notes:
+- (optional notes)
+
+### T065 — Privacy & data retention
+
+Phase: Phase 13 â€” Legal & Compliance
+Description: Add section to Privacy explaining retention of bids/orders/kyc docs; provide contact for data requests.
+
+Files changed:
+- (list files changed; update when implementing)
+
+DB changes:
+- (describe schema/migrations if any)
+
+API endpoints:
+- (list endpoints, method, request/response)
+
+Tests:
+- (unit/integration/manual checks)
+
+Notes:
+- (optional notes)
+
+### T066 — Cookie banner
+
+Phase: Phase 13 â€” Legal & Compliance
+Description: Implement cookie consent banner with minimal analytics toggle; store choice.
+
+Files changed:
+- (list files changed; update when implementing)
+
+DB changes:
+- (describe schema/migrations if any)
+
+API endpoints:
+- (list endpoints, method, request/response)
+
+Tests:
+- (unit/integration/manual checks)
+
+Notes:
+- (optional notes)
+
+### T067 — Rate limits for APIs
+
+Phase: Phase 14 â€” QA/Security/Perf
+Description: Add in-memory or Upstash-based rate limiter for write endpoints: bid, deposit, checkout, settings.
+
+Files changed:
+- (list files changed; update when implementing)
+
+DB changes:
+- (describe schema/migrations if any)
+
+API endpoints:
+- (list endpoints, method, request/response)
+
+Tests:
+- (unit/integration/manual checks)
+
+Notes:
+- (optional notes)
+
+### T068 — Zod validation
+
+Phase: Phase 14 â€” QA/Security/Perf
+Description: Introduce zod schemas for listing, bid, inspection, settings; return typed errors.
+
+Files changed:
+- (list files changed; update when implementing)
+
+DB changes:
+- (describe schema/migrations if any)
+
+API endpoints:
+- (list endpoints, method, request/response)
+
+Tests:
+- (unit/integration/manual checks)
+
+Notes:
+- (optional notes)
+
+### T069 — RLS policy review
+
+Phase: Phase 14 â€” QA/Security/Perf
+Description: Audit all RLS to ensure least privilege and PII protection; add tests/queries to verify.
+
+Files changed:
+- (list files changed; update when implementing)
+
+DB changes:
+- (describe schema/migrations if any)
+
+API endpoints:
+- (list endpoints, method, request/response)
+
+Tests:
+- (unit/integration/manual checks)
+
+Notes:
+- (optional notes)
+
+### T070 — Accessibility pass
+
+Phase: Phase 14 â€” QA/Security/Perf
+Description: Add aria labels, focus states, contrast fixes, keyboard navigation and skip-to-content link.
+
+Files changed:
+- (list files changed; update when implementing)
+
+DB changes:
+- (describe schema/migrations if any)
+
+API endpoints:
+- (list endpoints, method, request/response)
+
+Tests:
+- (unit/integration/manual checks)
+
+Notes:
+- (optional notes)
+
+### T071 — Manual E2E checklist
+
+Phase: Phase 14 â€” QA/Security/Perf
+Description: Write a checklist: signup -> KYC -> create listing -> add inspection -> deposit -> bid -> win -> invoice -> pay -> fulfilment.
+
+Files changed:
+- (list files changed; update when implementing)
+
+DB changes:
+- (describe schema/migrations if any)
+
+API endpoints:
+- (list endpoints, method, request/response)
+
+Tests:
+- (unit/integration/manual checks)
+
+Notes:
+- (optional notes)
+
+### T072 — Vercel config
+
+Phase: Phase 15 â€” Deployment
+Description: Add vercel.json, configure build output, and map environment variables for prod.
+
+Files changed:
+- (list files changed; update when implementing)
+
+DB changes:
+- (describe schema/migrations if any)
+
+API endpoints:
+- (list endpoints, method, request/response)
+
+Tests:
+- (unit/integration/manual checks)
+
+Notes:
+- (optional notes)
+
+### T073 — Supabase production setup
+
+Phase: Phase 15 â€” Deployment
+Description: Point to prod project; run migrations; verify RLS and storage buckets; set policies.
+
+Files changed:
+- (list files changed; update when implementing)
+
+DB changes:
+- (describe schema/migrations if any)
+
+API endpoints:
+- (list endpoints, method, request/response)
+
+Tests:
+- (unit/integration/manual checks)
+
+Notes:
+- (optional notes)
+
+### T074 — Stripe webhooks (prod)
+
+Phase: Phase 15 â€” Deployment
+Description: Set STRIPE_WEBHOOK_SECRET in prod; register webhook endpoints; test payment events E2E.
+
+Files changed:
+- (list files changed; update when implementing)
+
+DB changes:
+- (describe schema/migrations if any)
+
+API endpoints:
+- (list endpoints, method, request/response)
+
+Tests:
+- (unit/integration/manual checks)
+
+Notes:
+- (optional notes)
+
+### T075 — Custom domain & SSL
+
+Phase: Phase 15 â€” Deployment
+Description: Add domain DNS records; force HTTPS; redirect wwwâ†’root; add security headers (HSTS).
+
+Files changed:
+- (list files changed; update when implementing)
+
+DB changes:
+- (describe schema/migrations if any)
+
+API endpoints:
+- (list endpoints, method, request/response)
+
+Tests:
+- (unit/integration/manual checks)
+
+Notes:
+- (optional notes)
+
+### T076 — Release tag v0.1.0
+
+Phase: Phase 15 â€” Deployment
+Description: Create CHANGELOG.md with features and known limitations; create git tag v0.1.0 and push.
+
+Files changed:
+- (list files changed; update when implementing)
+
+DB changes:
+- (describe schema/migrations if any)
+
+API endpoints:
+- (list endpoints, method, request/response)
+
+Tests:
+- (unit/integration/manual checks)
+
+Notes:
+- (optional notes)
+
