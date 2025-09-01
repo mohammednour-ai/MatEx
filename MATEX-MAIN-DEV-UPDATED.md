@@ -1231,6 +1231,66 @@ Append a new section documenting the task as in MATEX-MAIN-DEV, files changed, t
 - Notes: Complete inspection booking system for buyers with comprehensive validation, notification integration, and user-friendly interface. Integrates seamlessly with T031 inspection slot management system.
 - Auth/Tokens Reference: Uses middleware-provided user context headers and Supabase server client for database operations and notifications
 
+**T033** - Inspection reminders
+- Status: ✅ COMPLETED
+- Start Date: 2025-09-01 12:00 AM
+- End Date: 2025-09-01 12:05 AM
+- Duration: 5 minutes
+- Description: Send reminders X hours before inspection slot time (configurable in settings) via in-app/email notifications.
+- Tools: TypeScript, Supabase server client, notification templates, cron job system
+- Branch: feat/inspection-reminders
+- Commit: "feat: implement comprehensive inspection reminder system"
+- Files Changed:
+  - Created src/lib/inspection-reminders.ts (comprehensive reminder processing system)
+  - Created src/lib/notification-helpers.ts (template-based notification system)
+  - Created src/lib/settings-seeder.ts (app settings management and seeding)
+  - Created src/app/api/inspections/reminders/route.ts (manual reminder processing API)
+- Features Implemented:
+  - Configurable reminder timing via app_settings (default 24 hours before inspection)
+  - Template-based notification system with variable substitution
+  - Batch reminder processing with 30-minute buffer window for optimal timing
+  - Manual reminder processing API for admin testing and troubleshooting
+  - Immediate reminder functionality for specific bookings
+  - Comprehensive reminder statistics for admin dashboard monitoring
+  - Settings seeding system for default configuration values
+  - Rate limiting and authentication for reminder management endpoints
+- Reminder System:
+  - getReminderSettings(): Retrieves configurable reminder timing from database
+  - getBookingsNeedingReminders(): Finds bookings within reminder time window
+  - sendInspectionReminder(): Sends template-based notifications with inspection details
+  - processInspectionReminders(): Main batch processing function for scheduled execution
+  - sendImmediateReminder(): Manual reminder trigger for testing/admin use
+  - getReminderStats(): Statistics for admin dashboard monitoring
+- Notification Templates:
+  - inspection_reminder: Comprehensive reminder with inspection details, seller contact, location
+  - Variable substitution: {{buyer_name}}, {{listing_title}}, {{inspection_date}}, {{seller_phone}}, etc.
+  - Multi-channel support: in-app and email notifications
+  - Template management with upsert functionality and default seeding
+- API Endpoints:
+  - GET /api/inspections/reminders - Get reminder statistics (admin only)
+  - POST /api/inspections/reminders - Process all pending reminders (admin only)
+  - PUT /api/inspections/reminders - Send immediate reminder for specific booking
+- Settings Integration:
+  - inspections.reminder_hours_before: Hours before inspection to send reminder (default: 24)
+  - inspections.reminder_enabled: Global reminder enable/disable flag (default: true)
+  - inspections.reminder_channels: Notification channels array (default: ['inapp', 'email'])
+  - Comprehensive default settings for auctions, fees, notifications, system configuration
+- Database Operations:
+  - Complex queries with inspection, listing, and profile relationships
+  - Reminder tracking with reminder_sent_at timestamp to prevent duplicates
+  - Atomic updates for reminder status tracking
+  - Performance optimization with proper indexing and query structure
+- Tests Performed:
+  - ✅ TypeScript compilation successful with proper type definitions
+  - ✅ Reminder processing logic with configurable timing and buffer windows
+  - ✅ Template-based notification system with variable substitution
+  - ✅ API endpoints with proper authentication and rate limiting
+  - ✅ Settings management and seeding functionality
+  - ✅ Database queries with proper relationships and error handling
+  - ✅ Comprehensive error handling and logging throughout system
+- Notes: Complete inspection reminder system with configurable timing, template-based notifications, and comprehensive admin management. Ready for production deployment with cron job integration for automated reminder processing.
+- Auth/Tokens Reference: Uses Supabase server client for database operations and middleware-provided user context for API authentication
+
 ## GPT5-FIX: 2025-08-31 — Validation & guard hardening
 
 GPT5-FIX: Added Zod-based validation to critical write endpoints (POST /api/settings and POST /api/auctions/[id]/bid) to enforce request shapes and return clear errors.
