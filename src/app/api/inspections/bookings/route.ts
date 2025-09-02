@@ -69,32 +69,59 @@ export async function GET(request: NextRequest) {
     }
 
     // Transform the data for easier consumption
-    const transformedBookings = bookings?.map(booking => ({
-      booking_id: booking.id,
-      inspection_id: booking.inspection_id,
-      status: booking.status,
-      notes: booking.notes,
-      booked_at: booking.booked_at,
-      cancelled_at: booking.cancelled_at,
-      inspection: {
-        slot_at: booking.inspections.slot_at,
-        capacity: booking.inspections.capacity,
-        duration_minutes: booking.inspections.duration_minutes,
-        location_address: booking.inspections.location_address,
-        location_notes: booking.inspections.location_notes,
-        listing: {
-          id: booking.inspections.listing_id,
-          title: booking.inspections.listings.title,
-          material: booking.inspections.listings.material,
-          location: `${booking.inspections.listings.location_city}, ${booking.inspections.listings.location_province}`,
-          seller: {
-            name: booking.inspections.listings.profiles.full_name,
-            phone: booking.inspections.listings.profiles.phone,
-            email: booking.inspections.listings.profiles.email
+    type BookingShape = {
+      id?: string;
+      inspection_id?: string;
+      status?: string;
+      notes?: string;
+      booked_at?: string;
+      cancelled_at?: string | null;
+      inspections?: {
+        slot_at?: string;
+        capacity?: number;
+        duration_minutes?: number;
+        location_address?: string;
+        location_notes?: string;
+        listing_id?: string;
+        listings?: {
+          title?: string;
+          material?: string;
+          location_city?: string;
+          location_province?: string;
+          profiles?: { full_name?: string; phone?: string; email?: string };
+        };
+      };
+    };
+
+    const transformedBookings = bookings?.map((booking: unknown) => {
+      const b = booking as BookingShape;
+      return {
+        booking_id: b.id,
+        inspection_id: b.inspection_id,
+        status: b.status,
+        notes: b.notes,
+        booked_at: b.booked_at,
+        cancelled_at: b.cancelled_at,
+        inspection: {
+          slot_at: b.inspections?.slot_at,
+          capacity: b.inspections?.capacity,
+          duration_minutes: b.inspections?.duration_minutes,
+          location_address: b.inspections?.location_address,
+          location_notes: b.inspections?.location_notes,
+          listing: {
+            id: b.inspections?.listing_id,
+            title: b.inspections?.listings?.title,
+            material: b.inspections?.listings?.material,
+            location: `${b.inspections?.listings?.location_city}, ${b.inspections?.listings?.location_province}`,
+            seller: {
+              name: b.inspections?.listings?.profiles?.full_name,
+              phone: b.inspections?.listings?.profiles?.phone,
+              email: b.inspections?.listings?.profiles?.email
+            }
           }
         }
-      }
-    })) || [];
+      };
+    }) || [];
 
     return NextResponse.json({
       success: true,

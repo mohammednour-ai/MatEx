@@ -1,5 +1,5 @@
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
 
 const files = ['public/matex_logo.png', 'docs/LOGO.md'];
 let missing = [];

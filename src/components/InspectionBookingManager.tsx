@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { Calendar, Clock, MapPin, User, Phone, Mail, AlertCircle, CheckCircle, XCircle } from './Icons';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Calendar, Clock, MapPin, User, Phone, AlertCircle, CheckCircle, XCircle } from './Icons';
 
 interface InspectionSlot {
   id: string;
@@ -61,7 +61,7 @@ export default function InspectionBookingManager({
   const [bookingNotes, setBookingNotes] = useState<{ [key: string]: string }>({});
 
   // Fetch available inspection slots
-  const fetchAvailableSlots = async () => {
+  const fetchAvailableSlots = useCallback(async () => {
     try {
       const response = await fetch(`/api/inspections?listing_id=${listingId}`);
       const data = await response.json();
@@ -80,12 +80,11 @@ export default function InspectionBookingManager({
       setError('Failed to fetch inspection slots');
       console.error('Error fetching slots:', err);
     }
-  };
+  }, [listingId]);
 
   // Fetch user's bookings
-  const fetchUserBookings = async () => {
+  const fetchUserBookings = useCallback(async () => {
     if (!userId) return;
-    
     try {
       const response = await fetch('/api/inspections/bookings?upcoming=true', {
         headers: {
@@ -107,7 +106,7 @@ export default function InspectionBookingManager({
     } catch (err) {
       console.error('Error fetching user bookings:', err);
     }
-  };
+  }, [userId, userEmail, listingId]);
 
   // Book an inspection slot
   const bookInspection = async (inspectionId: string) => {
@@ -224,8 +223,8 @@ export default function InspectionBookingManager({
       setLoading(false);
     };
 
-    loadData();
-  }, [listingId, userId]);
+    void loadData();
+  }, [fetchAvailableSlots, fetchUserBookings]);
 
   // Auto-clear messages after 5 seconds
   useEffect(() => {

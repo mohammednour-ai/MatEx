@@ -1,10 +1,9 @@
-const sharp = require('sharp');
-const fs = require('fs');
-const path = require('path');
+import sharp from 'sharp';
+import fs from 'fs';
+import path from 'path';
 
 const src = path.join(__dirname, '..', 'public', 'matex_logo.png');
 const outDir = path.join(__dirname, '..', 'public', 'icons');
-const favicon = path.join(__dirname, '..', 'public', 'favicon.ico');
 
 const sizes = [32, 64, 128, 256, 512];
 

@@ -3,6 +3,8 @@ import { supabaseServer } from '@/lib/supabaseServer';
 import { z } from 'zod';
 import { allowRequest, getRateLimitStatus } from '@/lib/rateLimiter';
 
+type RouteContextParams = { params?: Record<string, string | undefined> | Promise<Record<string, string | undefined>> };
+
 // Zod schema for booking inspection
 const BookInspectionSchema = z.object({
   notes: z.string().max(500).optional()
@@ -43,9 +45,15 @@ async function sendInspectionNotifications(
       return;
     }
 
-    const listing = inspectionData.listings;
-    const seller = listing.profiles;
-    const slotTime = new Date(inspectionData.slot_at).toLocaleString();
+    // Narrow types for the build-time supabase stub
+    const inspectionRecord = (inspectionData as unknown) as {
+      listings: { title: string; seller_id: string };
+      slot_at: string;
+      listing_id: string;
+    };
+
+    const listing = inspectionRecord.listings;
+    const slotTime = new Date(inspectionRecord.slot_at).toLocaleString();
 
     // Notification for buyer
     const buyerNotification = {
@@ -85,7 +93,7 @@ async function sendInspectionNotifications(
 // POST /api/inspections/[id]/book - Book an inspection slot
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: RouteContextParams
 ) {
   try {
     // Rate limiting per IP
@@ -98,7 +106,14 @@ export async function POST(
       );
     }
 
-    const inspectionId = params.id;
+  const inspectionId = (await Promise.resolve(context?.params || {})).id;
+    
+    if (!inspectionId) {
+      return NextResponse.json(
+        { success: false, error: 'Inspection ID is required' },
+        { status: 400 }
+      );
+    }
     
     // Get user context from headers
     const userId = request.headers.get('x-user-id');
@@ -150,9 +165,15 @@ export async function POST(
         { status: 404 }
       );
     }
+    const inspectionRecord = (inspection as unknown) as {
+      listings: { status: string; seller_id: string; title: string };
+      slot_at: string;
+      listing_id: string;
+      capacity: number;
+    };
 
     // Verify listing is active
-    if (inspection.listings.status !== 'active') {
+    if (inspectionRecord.listings.status !== 'active') {
       return NextResponse.json(
         { success: false, error: 'Cannot book inspection for inactive listing' },
         { status: 400 }
@@ -160,7 +181,7 @@ export async function POST(
     }
 
     // Prevent seller from booking their own inspection
-    if (inspection.listings.seller_id === userId) {
+  if (inspectionRecord.listings.seller_id === userId) {
       return NextResponse.json(
         { success: false, error: 'Sellers cannot book inspections for their own listings' },
         { status: 403 }
@@ -168,7 +189,7 @@ export async function POST(
     }
 
     // Verify slot is in the future
-    const slotTime = new Date(inspection.slot_at);
+  const slotTime = new Date(inspectionRecord.slot_at);
     const now = new Date();
     
     if (slotTime <= now) {
@@ -203,7 +224,7 @@ export async function POST(
 
     const currentBookings = activeBookings?.length || 0;
     
-    if (currentBookings >= inspection.capacity) {
+  if (currentBookings >= inspectionRecord.capacity) {
       return NextResponse.json(
         { success: false, error: 'Inspection slot is fully booked' },
         { status: 400 }
@@ -237,7 +258,7 @@ export async function POST(
       newBooking.id,
       'booked',
       userId,
-      inspection.listings.seller_id
+      inspectionRecord.listings.seller_id
     ).catch(console.error);
 
     return NextResponse.json({
@@ -245,9 +266,9 @@ export async function POST(
       data: {
         booking_id: newBooking.id,
         inspection_id: inspectionId,
-        slot_at: inspection.slot_at,
-        status: 'booked',
-        remaining_capacity: inspection.capacity - currentBookings - 1
+  slot_at: inspectionRecord.slot_at,
+  status: 'booked',
+  remaining_capacity: inspectionRecord.capacity - currentBookings - 1
       },
       message: 'Inspection booked successfully'
     });
@@ -264,7 +285,7 @@ export async function POST(
 // DELETE /api/inspections/[id]/book - Cancel an inspection booking
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: RouteContextParams
 ) {
   try {
     // Rate limiting per IP
@@ -277,7 +298,14 @@ export async function DELETE(
       );
     }
 
-    const inspectionId = params.id;
+  const inspectionId = (await Promise.resolve(context?.params || {})).id;
+    
+    if (!inspectionId) {
+      return NextResponse.json(
+        { success: false, error: 'Inspection ID is required' },
+        { status: 400 }
+      );
+    }
     
     // Get user context from headers
     const userId = request.headers.get('x-user-id');
@@ -314,9 +342,13 @@ export async function DELETE(
         { status: 404 }
       );
     }
-
     // Check if inspection is in the past (cannot cancel past inspections)
-    const slotTime = new Date(booking.inspections.slot_at);
+    const bookingRecord = (booking as unknown) as {
+      id: string;
+      inspections: { slot_at: string; listing_id: string; listings: { seller_id: string; title: string } };
+    };
+
+    const slotTime = new Date(bookingRecord.inspections.slot_at);
     const now = new Date();
     
     if (slotTime <= now) {
@@ -346,10 +378,10 @@ export async function DELETE(
     // Send notifications asynchronously
     sendInspectionNotifications(
       inspectionId,
-      booking.id,
+      bookingRecord.id,
       'cancelled',
       userId,
-      booking.inspections.listings.seller_id
+      bookingRecord.inspections.listings.seller_id
     ).catch(console.error);
 
     return NextResponse.json({

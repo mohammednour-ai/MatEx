@@ -3,22 +3,25 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
-    "build": "next build --turbopack",
+  "dev": "next dev --turbopack",
+  "build": "next build --turbopack",
     "start": "next start",
     "lint": "eslint",
+  "prepare": "husky install",
     "check:logo": "node ./scripts/check_logo_exists.js",
     "generate:logos": "node ./scripts/generate_logos_sharp.js",
     "seed:settings": "node scripts/seed-settings.js"
   },
   "dependencies": {
+    "@stripe/stripe-js": "^7.9.0",
     "@supabase/supabase-js": "^2.56.1",
     "dotenv": "^16.4.5",
-    "zod": "^3.23.1",
-    "sharp": "^0.32.5",
     "next": "15.5.2",
     "react": "19.1.0",
-    "react-dom": "19.1.0"
+    "react-dom": "19.1.0",
+    "sharp": "^0.32.5",
+    "stripe": "^18.5.0",
+    "zod": "^3.23.1"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
@@ -29,6 +32,19 @@
     "eslint": "^9",
     "eslint-config-next": "15.5.2",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "husky": "^8.0.0",
+    "lint-staged": "^14.0.0",
+    "prettier": "^2.8.8"
+  }
+
+  ,"engines": {
+    "node": ">=20 <23"
+  },
+  "lint-staged": {
+    "*.{js,ts,tsx,md,json,css,scss,html}": [
+      "prettier --write",
+      "git add"
+    ]
   }
 }

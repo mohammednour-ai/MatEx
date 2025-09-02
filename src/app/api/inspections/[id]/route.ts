@@ -3,6 +3,10 @@ import { supabaseServer } from '@/lib/supabaseServer';
 import { z } from 'zod';
 import { allowRequest, getRateLimitStatus } from '@/lib/rateLimiter';
 
+type RouteContextParams = { params?: Record<string, string | undefined> | Promise<Record<string, string | undefined>> };
+
+type BookingRow = { status?: string };
+
 // Zod schema for updating inspection slots
 const UpdateInspectionSchema = z.object({
   slot_at: z.string().datetime().optional(),
@@ -25,16 +29,26 @@ async function getInspectionSettings() {
       'inspections.max_advance_days'
     ]);
 
-  const settingsMap = settings?.reduce((acc: Record<string, any>, setting: any) => {
-    acc[setting.key] = setting.value;
+  const settingsMap = (settings || []).reduce((acc: Record<string, unknown>, setting: unknown) => {
+    const s = setting as { key?: string; value?: unknown };
+    if (s.key) acc[s.key] = s.value;
     return acc;
-  }, {} as Record<string, any>) || {};
+  }, {} as Record<string, unknown>);
+
+  const toNumber = (v: unknown, fallback: number) => {
+    if (typeof v === 'number') return v;
+    if (typeof v === 'string') {
+      const n = Number(v);
+      return Number.isFinite(n) ? n : fallback;
+    }
+    return fallback;
+  };
 
   return {
-    default_duration_minutes: settingsMap['inspections.default_duration_minutes'] || 60,
-    max_slots_per_listing: settingsMap['inspections.max_slots_per_listing'] || 10,
-    min_buffer_minutes: settingsMap['inspections.min_buffer_minutes'] || 30,
-    max_advance_days: settingsMap['inspections.max_advance_days'] || 30
+    default_duration_minutes: toNumber(settingsMap['inspections.default_duration_minutes'], 60),
+    max_slots_per_listing: toNumber(settingsMap['inspections.max_slots_per_listing'], 10),
+    min_buffer_minutes: toNumber(settingsMap['inspections.min_buffer_minutes'], 30),
+    max_advance_days: toNumber(settingsMap['inspections.max_advance_days'], 30)
   };
 }
 
@@ -92,13 +106,13 @@ async function validateTimeOverlaps(
 // GET /api/inspections/[id] - Get specific inspection slot
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: RouteContextParams
 ) {
   try {
-    const inspectionId = params.id;
+  const inspectionId = (await Promise.resolve(context?.params || {})).id;
     
     // Get user context from headers
-    const userId = request.headers.get('x-user-id');
+    // user id is available via header when needed
     
     // Get inspection slot with booking details
     const { data: inspection, error } = await supabaseServer
@@ -132,7 +146,7 @@ export async function GET(
     
     // Calculate booking statistics
     const activeBookings = inspection.inspection_bookings?.filter(
-      (booking: any) => booking.status === 'booked'
+      (booking: unknown) => (booking as BookingRow).status === 'booked'
     ).length || 0;
     
     const responseData = {
@@ -158,7 +172,7 @@ export async function GET(
 // PUT /api/inspections/[id] - Update inspection slot
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: RouteContextParams
 ) {
   try {
     // Rate limiting per IP
@@ -171,7 +185,7 @@ export async function PUT(
       );
     }
     
-    const inspectionId = params.id;
+  const inspectionId = (await Promise.resolve(context?.params || {})).id;
     
     // Get user context from headers
     const userId = request.headers.get('x-user-id');
@@ -235,7 +249,7 @@ export async function PUT(
     
     // Check if there are active bookings when trying to modify time/capacity
     const activeBookings = existingInspection.inspection_bookings?.filter(
-      (booking: any) => booking.status === 'booked'
+      (booking: unknown) => (booking as BookingRow).status === 'booked'
     ).length || 0;
     
     if (activeBookings > 0) {
@@ -326,7 +340,7 @@ export async function PUT(
 // DELETE /api/inspections/[id] - Delete/deactivate inspection slot
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: RouteContextParams
 ) {
   try {
     // Rate limiting per IP
@@ -339,7 +353,7 @@ export async function DELETE(
       );
     }
     
-    const inspectionId = params.id;
+  const inspectionId = (await Promise.resolve(context?.params || {})).id;
     
     // Get user context from headers
     const userId = request.headers.get('x-user-id');
@@ -385,7 +399,7 @@ export async function DELETE(
     
     // Check if there are active bookings
     const activeBookings = existingInspection.inspection_bookings?.filter(
-      (booking: any) => booking.status === 'booked'
+      (booking: unknown) => (booking as BookingRow).status === 'booked'
     ).length || 0;
     
     if (activeBookings > 0) {

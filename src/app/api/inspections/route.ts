@@ -14,29 +14,8 @@ const CreateInspectionSchema = z.object({
 });
 
 // Zod schema for updating inspection slots
-const UpdateInspectionSchema = z.object({
-  slot_at: z.string().datetime().optional(),
-  capacity: z.number().int().min(1).max(50).optional(),
-  duration_minutes: z.number().int().min(15).max(480).optional(),
-  location_address: z.string().min(1).max(500).optional(),
-  location_notes: z.string().max(1000).optional(),
-  is_active: z.boolean().optional()
-});
 
-interface InspectionSlot {
-  id: string;
-  listing_id: string;
-  slot_at: string;
-  capacity: number;
-  duration_minutes: number;
-  location_address?: string;
-  location_notes?: string;
-  is_active: boolean;
-  created_at: string;
-  updated_at: string;
-  available_capacity?: number;
-  bookings_count?: number;
-}
+// inspection slot types/schemas are defined elsewhere; keep route implementation minimal
 
 // Helper function to get inspection settings from app_settings
 async function getInspectionSettings() {
@@ -50,16 +29,17 @@ async function getInspectionSettings() {
       'inspections.max_advance_days'
     ]);
 
-  const settingsMap = settings?.reduce((acc, setting) => {
-    acc[setting.key] = setting.value;
+  const settingsMap = settings?.reduce((acc: Record<string, unknown>, setting: unknown) => {
+    const s = setting as { key: string; value: unknown };
+    acc[s.key as string] = s.value;
     return acc;
-  }, {} as Record<string, any>) || {};
+  }, {} as Record<string, unknown>) || {};
 
   return {
-    default_duration_minutes: settingsMap['inspections.default_duration_minutes'] || 60,
-    max_slots_per_listing: settingsMap['inspections.max_slots_per_listing'] || 10,
-    min_buffer_minutes: settingsMap['inspections.min_buffer_minutes'] || 30,
-    max_advance_days: settingsMap['inspections.max_advance_days'] || 30
+    default_duration_minutes: typeof settingsMap['inspections.default_duration_minutes'] === 'number' ? settingsMap['inspections.default_duration_minutes'] as number : Number(settingsMap['inspections.default_duration_minutes']) || 60,
+    max_slots_per_listing: typeof settingsMap['inspections.max_slots_per_listing'] === 'number' ? settingsMap['inspections.max_slots_per_listing'] as number : Number(settingsMap['inspections.max_slots_per_listing']) || 10,
+    min_buffer_minutes: typeof settingsMap['inspections.min_buffer_minutes'] === 'number' ? settingsMap['inspections.min_buffer_minutes'] as number : Number(settingsMap['inspections.min_buffer_minutes']) || 30,
+    max_advance_days: typeof settingsMap['inspections.max_advance_days'] === 'number' ? settingsMap['inspections.max_advance_days'] as number : Number(settingsMap['inspections.max_advance_days']) || 30
   };
 }
 
@@ -127,8 +107,7 @@ export async function GET(request: NextRequest) {
       );
     }
     
-    // Get user context from headers
-    const userId = request.headers.get('x-user-id');
+  // User context available via headers if needed
     
     // Get inspection slots with booking counts
     const { data: inspections, error } = await supabaseServer
@@ -153,15 +132,18 @@ export async function GET(request: NextRequest) {
     }
     
     // Calculate available capacity for each slot
-    const slotsWithCapacity = inspections?.map(inspection => {
-      const activeBookings = inspection.inspection_bookings?.filter(
-        (booking: any) => booking.status === 'booked'
+    type BookingRow = { status?: string };
+    type InspectionRow = { capacity?: number; inspection_bookings?: unknown[] } & Record<string, unknown>;
+    const slotsWithCapacity = inspections?.map((inspection: unknown) => {
+      const insp = inspection as InspectionRow;
+      const activeBookings = insp.inspection_bookings?.filter(
+        (booking: unknown) => (booking as BookingRow).status === 'booked'
       ).length || 0;
       
       return {
-        ...inspection,
+        ...insp,
         bookings_count: activeBookings,
-        available_capacity: inspection.capacity - activeBookings,
+        available_capacity: (insp.capacity || 0) - activeBookings,
         inspection_bookings: undefined // Remove detailed bookings from response
       };
     }) || [];

@@ -1,0 +1,55 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, chore/tasklist-md ]
+  pull_request:
+    branches: [ main, chore/tasklist-md ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install dependencies
+        run: npm ci
+      - name: TypeScript check
+        run: npx tsc --noEmit
+      - name: Lint
+        run: npm run lint || true
+      - name: Build
+        run: npm run build
+name: CI
+
+on:
+  push:
+    branches: [ main, master, chore/tasklist-md ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+      - name: Install dependencies
+        run: npm ci
+        working-directory: ./matex
+      - name: TypeScript check
+        run: npx tsc --noEmit
+        working-directory: ./matex
+      - name: Build
+        run: npm run build
+        working-directory: ./matex
+      - name: Lint
+        run: npm run lint --silent || true
+        working-directory: ./matex

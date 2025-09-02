@@ -1,7 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { supabaseClient } from '@/lib/supabaseClient';
+import React, { useState, useEffect, useCallback } from 'react';
 
 interface InspectionSlot {
   id: string;
@@ -48,18 +47,7 @@ export default function InspectionSlotManager({ listingId, isOwner }: Inspection
   });
 
   // Load inspection settings
-  useEffect(() => {
-    loadInspectionSettings();
-  }, []);
-
-  // Load inspection slots
-  useEffect(() => {
-    if (listingId) {
-      loadInspectionSlots();
-    }
-  }, [listingId]);
-
-  const loadInspectionSettings = async () => {
+  const loadInspectionSettings = useCallback(async () => {
     try {
       const response = await fetch('/api/settings?keys=inspections.default_duration_minutes,inspections.max_slots_per_listing,inspections.min_buffer_minutes,inspections.max_advance_days');
       const result = await response.json();
@@ -81,9 +69,13 @@ export default function InspectionSlotManager({ listingId, isOwner }: Inspection
     } catch (error) {
       console.error('Error loading inspection settings:', error);
     }
-  };
+  }, []);
+  useEffect(() => {
+    void loadInspectionSettings();
+  }, [loadInspectionSettings]);
 
-  const loadInspectionSlots = async () => {
+  // Load inspection slots
+  const loadInspectionSlots = useCallback(async () => {
     try {
       setLoading(true);
       const response = await fetch(`/api/inspections?listing_id=${listingId}`);
@@ -100,7 +92,14 @@ export default function InspectionSlotManager({ listingId, isOwner }: Inspection
     } finally {
       setLoading(false);
     }
-  };
+  }, [listingId]);
+  useEffect(() => {
+    if (listingId) {
+      void loadInspectionSlots();
+    }
+  }, [listingId, loadInspectionSlots]);
+
+  // loadInspectionSlots is implemented above with useCallback to keep a stable reference
 
   const handleCreateSlot = async (e: React.FormEvent) => {
     e.preventDefault();
