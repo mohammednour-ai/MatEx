@@ -1535,3 +1535,79 @@ Tests:
 Notes:
 - (optional notes)
 
+### Phase: 16 — Growth & Trust
+
+This phase contains small, ~1 hour implementation tasks to increase buyer trust, seller productivity, and cross-cutting operations features. Each task is intentionally small and scoped for a single developer hour.
+
+Below are concise entries for tasks T077 → T144 (see `matex_full_task_list.csv` for CSV rows).
+
+* T077 — DB: escrow fields and indexes — Branch: feat/escrow-db — Add `escrow_status`, `escrow_amount_cad`, `escrow_release_at` to `orders` and index; acceptance: migration runs and columns exist.
+* T078 — API: create escrow hold (authorize) — Branch: feat/api-escrow-authorize — POST /api/escrow/authorize to create escrow hold; acceptance: returns 200 and order shows `escrow_status=authorized`.
+* T079 — UI: escrow badge + CTA on order page — Branch: feat/ui-order-escrow-badge — Add badge/details row on buyer order detail; acceptance: badge visible and reflects DB state.
+* T080 — Worker: escrow release trigger (skeleton) — Branch: feat/escrow-worker — Scheduled worker stub reading `escrow_release_at`; acceptance: worker lists eligible orders on dry-run.
+* T081 — DB: disputes table — Branch: feat/db-disputes — Create `disputes` table with evidence JSONB; acceptance: migration adds table.
+* T082 — API: submit dispute + evidence upload — Branch: feat/api-dispute-create — POST /api/disputes to create dispute and store evidence metadata; acceptance: dispute stored and audit entry created.
+* T083 — Admin: disputes queue UI — Branch: feat/admin-disputes-ui — Admin list & actions for disputes; acceptance: admin updates reflect in DB & audit_log.
+* T084 — Notifications: dispute triggers — Branch: feat/notify-dispute — Add notification templates and triggers; acceptance: notification rows created.
+* T085 — DB: saved_searches table — Branch: feat/db-saved-searches — Create `saved_searches` table; acceptance: migration created.
+* T086 — API: saved-search CRUD — Branch: feat/api-saved-searches — CRUD endpoints for saved searches; acceptance: create & list work for user.
+* T087 — UI: save-search button + manage panel — Branch: feat/ui-saved-search-btn — Add save button + modal in search UI; acceptance: creates saved_search via API.
+* T088 — DB: price_watch table — Branch: feat/db-price-watch — Create `price_watch` table for alerts; acceptance: migration runs.
+* T089 — Job: price-watch alert runner — Branch: feat/job-price-watch-alerts — Cron evaluating price_watch conditions; acceptance: job finds matches on dry-run.
+* T090 — UI: watch toggle on listing — Branch: feat/ui-watch-toggle — Add watch icon to listing card; acceptance: toggling updates DB & shows toast.
+* T091 — API: seller reputation detail endpoint — Branch: feat/api-seller-reputation — GET /api/sellers/:id/reputation; acceptance: returns JSON summary.
+* T092 — UI: reputation deep-view page — Branch: feat/ui-seller-reputation — Seller reputation page; acceptance: page loads and shows values.
+* T093 — Helper: reputation compute helper — Branch: feat/lib-reputation-helper — Helper + unit test; acceptance: unit test for sample data.
+* T094 — DB: RFQ (request for quote) table — Branch: feat/db-rfq — Create `rfqs` table; acceptance: migration added.
+* T095 — API: create RFQ and notify sellers — Branch: feat/api-rfq-create — POST /api/rfqs; acceptance: RFQ created + notification entry.
+* T096 — UI: RFQ form on listing — Branch: feat/ui-rfq-form — RFQ modal; acceptance: modal submits successfully.
+* T097 — Feature: invoice/PO PDF stub — Branch: feat/invoice-pdf-stub — JSON→PDF stub endpoint; acceptance: returns signed URL.
+* T098 — UI: download PO/invoice on order page — Branch: feat/ui-order-invoice-link — Download button on order; acceptance: signed URL displayed.
+* T099 — DB: buyer_preapproved flag — Branch: feat/db-buyer-qualification — Add `is_preapproved` to profiles; acceptance: column present.
+* T100 — Admin: mark buyer pre-approval — Branch: feat/admin-buyer-approve — Admin toggle + audit_log; acceptance: profile updated.
+* T101 — UI: show preapproved badge on buyer profile — Branch: feat/ui-buyer-preapproved-badge — Badge in profile & checkout gating; acceptance: badge visible.
+* T102 — API: CSV upload endpoint for listings — Branch: feat/api-listings-import — POST /api/listings/import; acceptance: file stored and job id returned.
+* T103 — UI: CSV mapping preview modal — Branch: feat/ui-listings-import-mapping — Mapping modal & preview; acceptance: mapping saved and API called.
+* T104 — Worker: process listings CSV (skeleton) — Branch: feat/job-listings-import — Background import worker stub; acceptance: dry-run validates rows.
+* T105 — Tests: CSV import validation tests — Branch: feat/test-listings-import — Unit tests for CSV parsing; acceptance: tests pass locally.
+* T106 — API: pricing suggestion endpoint — Branch: feat/api-price-suggest — GET /api/price/suggest; acceptance: returns suggestion for sample input.
+* T107 — UI: show suggested price hint in listing form — Branch: feat/ui-price-suggestion — Hint + apply action; acceptance: clicking applies suggestion.
+* T108 — DB: schedule_at and expiry_at for listings — Branch: feat/db-listing-schedule — Add `schedule_at` and `expiry_at`; acceptance: migration adds fields.
+* T109 — Worker: scheduled publish/expiry runner — Branch: feat/job-listing-scheduler — Cron to publish/expire listings; acceptance: dry-run shows intended changes.
+* T110 — UI: schedule fields on create/edit listing — Branch: feat/ui-listing-schedule — Datepickers for schedule/expiry; acceptance: values persist.
+* T111 — Analytics: view/save/contact counters (DB) — Branch: feat/db-analytics-counters — Add counters/events table; acceptance: DB change applied.
+* T112 — API: analytics endpoints for seller — Branch: feat/api-analytics-seller — GET /api/analytics/seller; acceptance: returns sample counts.
+* T113 — UI: export leads CSV button — Branch: feat/ui-export-leads — Export leads CSV; acceptance: API returns CSV.
+* T114 — DB: moderation queue flag — Branch: feat/db-moderation-queue — Add moderation fields to listings; acceptance: columns added.
+* T115 — UI: bulk edit modal (skeleton) — Branch: feat/ui-bulk-edit-modal — Admin bulk edit modal; acceptance: batch request summary returned.
+* T116 — Worker: bulk edit apply job — Branch: feat/job-bulk-edit — Background worker to apply bulk edits; acceptance: dry-run logs summary.
+* T117 — DB/UI: pickup scheduling for large lots — Branch: feat/pickup-scheduling — Reuse inspection slots for pickups; acceptance: buyer can request pickup slot.
+* T118 — API: pickup confirmation notification — Branch: feat/notify-pickup — Notify seller & buyer on pickup booking; acceptance: notifications inserted.
+* T119 — Settings/UI: PCI & privacy compliance flags — Branch: feat/settings-compliance-flags — Add compliance toggles to app_settings; acceptance: settings editable.
+* T120 — Audit: compliance audit trail entry — Branch: feat/audit-compliance-log — Log compliance changes to audit_log; acceptance: entries recorded.
+* T121 — Flow: onboarding workflow state machine — Branch: feat/onboarding-workflow — Add `onboarding_state` to profiles; acceptance: state updates on step completion.
+* T122 — Notifications: onboarding automation triggers — Branch: feat/notify-onboarding — Onboarding notification triggers; acceptance: notifications created on simulated events.
+* T123 — Admin: onboarding queue view — Branch: feat/admin-onboarding-queue — Admin page for onboarding queue; acceptance: list loads and actions update state.
+* T124 — Job: auto-run KYC checks (skeleton) — Branch: feat/job-kyc-autocheck — KYC auto-check worker stub; acceptance: dry-run flags sample uploads.
+* T125 — DB: reviews table tied to orders — Branch: feat/db-reviews — Create `reviews` table; acceptance: migration adds table.
+* T126 — API: post-review (order-locked) — Branch: feat/api-post-review — POST /api/reviews; acceptance: review saved and visible.
+* T127 — UI: review widget on order and seller profile — Branch: feat/ui-review-widget — Rating widget on order complete page; acceptance: submit stores review.
+* T128 — Settings: insurance option toggle + price addon — Branch: feat/settings-insurance — Add insurance settings to app_settings; acceptance: setting stored.
+* T129 — UI: insurance checkbox at checkout — Branch: feat/ui-checkout-insurance — Add insurance option at checkout; acceptance: selection reflected in payment amount.
+* T130 — Lib: multi-currency display helper — Branch: feat/lib-currency-helper — Currency conversion helper; acceptance: returns converted sample.
+* T131 — Settings: default currency and FX rate keys — Branch: feat/settings-currency — Add `currency.default` and `currency.rates` keys; acceptance: settings readable.
+* T132 — UI: currency selector and converted price hint — Branch: feat/ui-currency-selector — Currency selector and price hint; acceptance: hint shows converted amount.
+* T133 — DB/API: support tickets table and create endpoint — Branch: feat/db-support-tickets — Support tickets table + POST endpoint; acceptance: ticket created.
+* T134 — Admin: support inbox view — Branch: feat/admin-support-inbox — Admin support viewer; acceptance: admin replies create notes and notifications.
+* T135 — PWA: manifest + service worker stub — Branch: feat/pwa-manifest-sw — Add manifest.json & SW registration; acceptance: manifest served & SW registers.
+* T136 — UI: responsive listing preview improvements — Branch: feat/ui-responsive-previews — Mobile CSS and accessibility tweaks; acceptance: mobile view improved.
+* T137 — Test: offline listing preview smoke test — Branch: feat/test-pwa-offline — Manual e2e checklist for offline preview; acceptance: checklist passed.
+* T138 — UI: deposit status consolidated component — Branch: feat/ui-deposit-status — Consolidated deposit status component; acceptance: shows auth/capture/refund states.
+* T139 — API: deposit status aggregation endpoint — Branch: feat/api-deposit-status — GET /api/deposits/:orderId/status; acceptance: returns expected fields.
+* T140 — API: save payment method consent flow (stub) — Branch: feat/api-save-payment-consent — POST /api/payments/save-consent; acceptance: consent saved.
+* T141 — UI: toggle to save payment method — Branch: feat/ui-save-payment-toggle — Save-payment toggle in checkout; acceptance: preference stored.
+* T142 — Lib: tax fields on invoice model — Branch: feat/lib-invoice-tax — Add tax fields to invoice model; acceptance: invoice JSON includes tax lines.
+* T143 — Helper: tax calc stub — Branch: feat/lib-tax-calc — Basic tax computation helper + test; acceptance: unit test passes.
+* T144 — Feature: attach PDF receipt to order — Branch: feat/order-receipt-pdf — Render receipt PDF & attach signed URL; acceptance: `order.receipt_url` populated.
+
+---

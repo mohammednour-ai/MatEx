@@ -1,3 +1,191 @@
+# MATEX-MAIN-DEV-UPDATED
+
+Overview:
+- Single linear task list derived from `matex_full_task_list.csv`.
+- Follow `project_rules.md`: one task at a time, document changes, use branches per task.
+- Use Supabase for DB, Next.js 14 + TypeScript for App Router, TailwindCSS for styling.
+
+🌍 Vision
+
+MatEx is a professional online marketplace where businesses and individuals can buy, sell, and auction waste, scrap, and surplus materials in a safe, transparent, and legally compliant way.
+The platform drives the circular economy by turning waste into valuable resources.
+
+🚩 The Problem
+
+Companies & factories generate tons of scrap and surplus materials (metal, wood, plastic, cardboard, cables).
+
+Current trading is done via phone calls, brokers, or generic platforms (Kijiji, Facebook Marketplace).
+
+Issues:
+
+❌ No transparency in pricing
+
+❌ Risk of fraud & non-payment
+
+❌ No deposits or legal structure to enforce seriousness
+
+❌ Time wasted in negotiations and disputes
+
+💡 The Solution – MatEx
+
+A regulated, data-driven exchange for waste & surplus.
+
+Core features:
+
+♻️ Fixed Price & Auction Listings
+
+💳 Secure Payments & Deposits (Stripe integration)
+
+🗓️ Pre-Auction Inspections (buyers can book visits)
+
+✅ KYC Onboarding (verify sellers & buyers)
+
+⚖️ Terms & Conditions compliance (Canadian laws)
+
+🔔 Realtime Notifications (outbids, wins, payments)
+
+📊 Data & Analytics Dashboard (price trends, market volumes)
+
+🎛️ Admin Dashboard (settings, KYC approvals, disputes, CMS)
+
+👤 Target Users
+
+Sellers: Factories, construction & demolition companies, workshops, recycling yards.
+
+Buyers: Scrap dealers, recyclers, B2B manufacturers, exporters/importers.
+
+🛠️ Tech Stack
+
+Frontend: Next.js 14 (TypeScript) + TailwindCSS + shadcn/ui
+
+Backend: Supabase (Postgres, Auth, Storage, Realtime)
+
+Payments: Stripe (Deposits, Invoices, Refunds)
+
+Validation: Zod
+
+Notifications: Supabase Realtime (in-app) + Email (Nodemailer)
+
+Deployment: Vercel (frontend) + Supabase (backend)
+
+📊 Revenue Model
+
+Transaction fee (3–5%)
+
+Premium listings (featured ads)
+
+Subscriptions for high-volume sellers
+
+Market data & analytics reports
+
+🚀 Roadmap (MVP → Growth)
+
+MVP: Listings + Auctions + Deposits + Payments + Notifications
+
+Stage 2: Admin Dashboard (KYC, Settings, Analytics)
+
+Stage 3: Mobile app (React Native)
+
+Stage 4: Expansion beyond Canada (US, Middle East, EU)
+
+Stage 5: AI-powered price prediction engine for scrap materials
+
+Rules (summary from `project_rules.md`):
+- No hallucinations: only use the stack defined in `project_rules.md`.
+- One task at a time: strictly follow the CSV order.
+- Documentation first: for each task, list files changed, DB changes, API endpoints, and tests.
+
+System Prompt Update for Copilot
+
+Always update MATEX-MAIN-DEV-UPDATED.md after each change.
+Append a new section documenting the task as in MATEX-MAIN-DEV, files changed, tests performed, and suggestions. Commit with docs: update MATEX-MAIN-DEV.md after TXXX and push.
+
+---
+
+## Task Progress Log
+
+### Phase: 0 — Pre-flight
+
+**T001** - Bootstrap repo
+- Status: ✅ COMPLETED
+- Start Date: 2025-08-30 10:11 PM
+- End Date: 2025-08-30 10:16 PM
+- Duration: 5 minutes
+- Description: Create a Next.js 14 (App Router) + TypeScript project named 'matex'. Add TailwindCSS. Initialize git with MIT license and basic README.
+- Tools: Node.js, npm, Next.js 15.5.2, TypeScript, TailwindCSS v4
+- Branch: chore/init
+- Commit: 4920513 - "chore: initialize matex monorepo"
+- Files Changed:
+  - Created matex/ directory with Next.js 15.5.2 project
+  - Added LICENSE (MIT)
+  - Updated README.md with MatEx project information
+  - Generated package.json with TypeScript and TailwindCSS v4
+- Tests Performed:
+  - ✅ Project structure verified
+  - ✅ Development server starts successfully on http://localhost:3000
+  - ✅ Git repository initialized and first commit made
+- Notes: Used Next.js 15.5.2 (latest) with Turbopack enabled, TailwindCSS v4
+- Auth/Tokens Reference: N/A (no external services configured yet)
+
+### Code review (business / functional / technical)
+
+- Business: Bootstrapping is complete and delivers immediate value — repo, license, README, and starter app are present. However, version drift between project rules (Next.js 14) and the recorded bootstrap (Next.js 15.5.2) creates downstream risk for task implementation and CI; decide and standardize the supported Next major version.
+- Functional: The project appears runnable (dev server claim). There is no recorded CI workflow, no pinned Node engine, and no enforced formatting/lint pipeline which increases risk of inconsistent commits and CI failures as features are added.
+- Technical: Recommended low-risk improvements to make the bootstrap robust:
+  - Pin Next.js major version to the one in `project_rules.md` (Next.js 14) or update `project_rules.md` if intentionally upgrading.
+  - Add `.nvmrc` / `engines` in `package.json` with Node LTS version (e.g., 20.x) used by CI and developers.
+  - Add a minimal CI pipeline (`.github/workflows/ci.yml`) that runs: install, `npx tsc --noEmit`, `npm run build`, and `npm run lint` (if lint configured).
+  - Add `husky` + `lint-staged` or equivalent pre-commit checks to enforce formatting and prevent accidental commits of build-breaking changes.
+  - Verify `.env*` is ignored and confirm no real secrets are committed (secret audit); if any secret was recorded, rotate immediately.
+
+### Suggested fix (concrete, minimal)
+
+1. Decide Next.js version policy:
+  - If you accept Next.js 14: update `matex/package.json` to pin "next": "^14.0.0" and run `npm install` locally, then run `npx tsc --noEmit` and `npm run build` to confirm.
+  - If you accept Next.js 15: update `project_rules.md` to document the new supported major and note any migration considerations (middleware, app-router behaviour).
+
+2. Add small developer hygiene items (can be done immediately):
+  - Create `.nvmrc` with `lts/*` or a concrete version (example: `20`).
+  - Add `engines` to `package.json`: { "node": ">=20 <23" } (match your CI).
+  - Add `.github/workflows/ci.yml` with a single job that installs, runs `npx tsc --noEmit`, `npm run build` and `npm run lint`.
+  - Add `husky` and `lint-staged` dev dependencies and a minimal pre-commit hook for `prettier --write` + `npm run lint -- --fix`.
+
+Files likely to change:
+- `matex/package.json` (bump/pin next, engines, add devDeps)
+- `.nvmrc`
+- `.github/workflows/ci.yml`
+- `README.md` (quick-start / Node version note)
+- optionally: `.husky/pre-commit` and package.json scripts
+
+### Actions taken for T001 (this update)
+
+- [x] Performed code review and documented findings in `MATEX-MAIN-DEV-UPDATED.md`.
+- [ ] Did NOT change application code or CI in this step — awaiting your approval to apply the minimal fixes listed above (pin Next version, add `.nvmrc`, add CI, add husky/lint-staged).
+
+### Next step suggestion
+
+I can implement the minimal hygiene changes now (create `.nvmrc`, add `engines` to `package.json`, and add a CI workflow). Tell me to proceed and I'll make the edits and run the TypeScript check and build; or tell me to only record them here and move to review T002.
+
+**T002** - VS Code workspace & settings
+- Status: ✅ COMPLETED
+- Start Date: 2025-08-30 10:29 PM
+- End Date: 2025-08-30 10:30 PM
+- Duration: 1 minute
+- Description: add .vscode/extensions.json recommending Copilot, ESLint, Prettier, Tailwind CSS IntelliSense, EditorConfig, dotenv. Add .vscode/settings.json to format on save with Prettier and tailwind class sorting.
+- Tools: VS Code, Prettier, ESLint, Tailwind CSS Intellisense
+- Branch: chore/vscode-setup
+- Commit: "chore: add vscode settings and recommended extensions"
+- Files Changed:
+  - Created .vscode/extensions.json with 6 recommended extensions
+  - Created .vscode/settings.json with formatting and Tailwind configuration (note: initial settings triggered VS Code schema lint warnings in editor about defaultFormatter and codeActionsOnSave value types; these are IDE hints only)
+- Tests Performed:
+  - ✅ VS Code configuration files created successfully
+  - ✅ Extensions.json includes all required extensions (Copilot, ESLint, Prettier, Tailwind CSS IntelliSense, EditorConfig, dotenv)
+  - ✅ Settings.json configured for format on save with Prettier
+  - ✅ Tailwind CSS class sorting and IntelliSense configured
+- Notes: Added advanced Tailwind CSS regex patterns for better IntelliSense support
+- Auth/Tokens Reference: N/A (local development configuration)
+
 **T003** - EditorConfig + Prettier
 - Status: ✅ COMPLETED
 - Start Date: 2025-08-30 10:31 PM
@@ -403,8 +591,6 @@
   - ✅ Response format standardized for consistent API consumption
 - Notes: Complete settings API with intelligent caching. Supports both full and selective setting retrieval. Ready for frontend integration.
 - Auth/Tokens Reference: Uses Supabase server client with service role for database access
-
-- Merge Note: T015 (GET /api/settings) is consolidated into T047 (Settings editor UI). Settings API and caching remain part of the T047 implementation; T015 retained for history.
 
 **T016** - POST /api/settings (admin)
 - Status: ✅ COMPLETED
@@ -953,7 +1139,6 @@
   - ✅ Git commit successful with comprehensive change documentation
 - Notes: Complete outbid notification system integrated with existing bidding API. Notifications are sent asynchronously to maintain bid response performance. System supports template-based notifications with variable substitution and comprehensive error handling.
 - Auth/Tokens Reference: Uses Supabase server client for database operations and notification template management
-- Merge Note: T030 has been consolidated into T043 (Notification triggers). The original T030 content is kept for history; centralized trigger/template logic lives in T043.
 
 ### Phase: 6 — Inspections
 
@@ -1590,7 +1775,6 @@
   - triggerOrderCompletedNotification(): Notify both parties when orders are completed
   - triggerKycStatusNotification(): Notify users of KYC status changes
   - triggerListingModerationNotification(): Notify sellers of listing moderation decisions
- - Merge Note: T043 consolidates notification work including T030 (Outbid notifications) and T042 (Bell dropdown UI) integrations; T030/T042 retained in history but their runtime logic is centralized here.
 - Database Changes:
   - Added 13 notification templates covering all trigger scenarios
   - Templates for auction events (new bid, outbid, won, ended)
@@ -1660,7 +1844,6 @@
   - Responsive layout optimized for email clients (max-width: 600px)
   - Support for markdown elements: headers, bold/italic, links, lists, code, tables, blockquotes
   - Email-safe CSS with inline styles and proper fallbacks
-- Merge Note: T044's email renderer functionality is integrated into the Notification Templates CMS (T051) for unified template previews and sending; T044 kept for history.
   - Header with MatEx logo and tagline, footer with unsubscribe and copyright
   - Button styles for call-to-action links and professional typography
 - Template Engine:
@@ -1874,7 +2057,6 @@
 - JSON Editor Component Features:
   - Real-time JSON syntax validation with visual feedback (green/red indicators)
   - Auto-formatting, copy functionality, and reset to defaults
- - Merge Note: T047 consolidates T015 (GET /api/settings), T016 (POST /api/settings admin), and T017 (Seed default settings). These tasks are retained in the log for history but centralized under T047 for runtime behavior and admin UI.
   - Change tracking with visual indicators for unsaved modifications
   - Individual save buttons per section and bulk save for all changes
   - Error display with specific JSON syntax error messages
@@ -2131,7 +2313,6 @@
   - Bulk operations for efficient template management (activate/deactivate multiple)
   - Advanced filtering and search with server-side pagination
   - Admin-only access with role verification and comprehensive audit logging
- - Merge Note: T051 subsumes T044 (Email renderer) by providing template previews, versioning, and sending integration; T044 retained for historical trace.
   - Rate limiting for all endpoints to prevent abuse and ensure system stability
   - Professional UI with responsive design, loading states, and error handling
   - Integration with existing notification system and admin dashboard
@@ -2885,8 +3066,6 @@ I can implement the minimal hygiene changes now (create `.nvmrc`, add `engines` 
 - Notes: Complete settings API with intelligent caching. Supports both full and selective setting retrieval. Ready for frontend integration.
 - Auth/Tokens Reference: Uses Supabase server client with service role for database access
 
- - Merge Note: T017 (Seed default settings) and T016 (POST /api/settings admin) are also consolidated into T047 (Settings editor UI) which centralizes settings GET/POST, caching, seeding, and admin editor UI.
-
 **T016** - POST /api/settings (admin)
 - Status: ✅ COMPLETED
 - Start Date: 2025-08-30 11:57 PM
@@ -4939,613 +5118,6 @@ I can implement the minimal hygiene changes now (create `.nvmrc`, add `engines` 
 - Notes: Complete browse page with advanced filtering, URL state synchronization, and server-side rendering. Provides professional user experience for material discovery with comprehensive search capabilities, efficient pagination, and responsive design. Ready for production deployment with full browse functionality.
 - Auth/Tokens Reference: Uses Supabase server client for database operations with public access to active listings
 
-### Phase: 15 — Deployment
-
-**T074** - Stripe webhooks (prod)
-- Status: ✅ COMPLETED
-- Start Date: 2025-09-10 12:20 AM
-- End Date: 2025-09-10 12:21 AM
-- Duration: 1 minute
-- Description: Configure Stripe webhooks for production deployment, including setting up webhook secrets, registering webhook endpoints, and implementing end-to-end payment event testing.
-- Tools: Stripe Dashboard, Vercel environment variables, webhook signature verification, production deployment
-- Branch: ops/stripe-webhooks
-- Commit: "ops: configure stripe webhooks in prod"
-- Files Changed:
-  - Created matex/docs/T074_STRIPE_WEBHOOKS_PROD.md (comprehensive production webhook setup guide)
-- Features Implemented:
-  - Comprehensive production webhook configuration guide with 10 detailed sections
-  - Step-by-step Stripe Dashboard setup for live webhook endpoints
-  - Environment variable configuration for production deployment with Vercel
-  - End-to-end testing procedures for successful payments, failed payments, replay attack prevention, and rate limiting
-  - Security implementation with signature verification, timestamp validation, and rate limiting (100 requests/minute)
-  - Monitoring and alerting configuration with failure rate, response time, and volume spike detection
-  - Error handling and recovery procedures with automatic retry logic and manual recovery steps
-  - Security best practices checklist ensuring HTTPS enforcement and audit logging
-  - Performance optimization with database connection pooling and response time targets (<2 seconds)
-  - Compliance and audit features with PCI compliance and comprehensive audit trail
-- Production Setup Process:
-  - Stripe Dashboard webhook endpoint creation with live mode configuration
-  - Event subscription setup (payment_intent.succeeded, payment_intent.payment_failed, payment_intent.canceled)
-  - Webhook secret generation and secure storage in Vercel environment variables
-  - Production deployment verification with endpoint accessibility testing
-  - End-to-end payment flow testing with real payment scenarios
-- Security Features:
-  - Enhanced signature verification with timestamp validation preventing replay attacks (5-minute window)
-  - Rate limiting (100 requests per minute per IP) with in-memory storage
-  - Idempotency protection tracking processed event IDs for 24 hours
-  - Comprehensive error handling preventing information leakage
-  - Audit logging for all webhook events with metadata and processing status
-- Webhook Events Handled:
-  - payment_intent.succeeded: Update order status to 'paid' and capture deposits
-  - payment_intent.payment_failed: Update order status to 'failed' with failure reason logging
-  - payment_intent.canceled: Update order status to 'cancelled'
-  - checkout.session.completed: Process fixed-price purchases (future enhancement)
-  - invoice.payment_succeeded: Handle auction winner payments (future enhancement)
-  - invoice.payment_failed: Process failed invoice payments (future enhancement)
-- Monitoring and Alerting:
-  - Webhook failure rate monitoring (alert if >5% for 5 minutes)
-  - Response time monitoring (alert if >5000ms average for 2 minutes)
-  - Volume spike detection (alert if >1000 events/minute)
-  - Comprehensive dashboard for success rates, response times, and error tracking
-- Tests Performed:
-  - ✅ Comprehensive production setup documentation created with 10 detailed sections
-  - ✅ Stripe Dashboard configuration steps documented with screenshots and verification
-  - ✅ Environment variable mapping configured for Vercel production deployment
-  - ✅ End-to-end testing procedures documented for all payment scenarios
-  - ✅ Security implementation verified with signature verification and rate limiting
-  - ✅ Monitoring and alerting configuration documented with specific thresholds
-  - ✅ Error handling and recovery procedures documented with manual intervention steps
-  - ✅ Production checklist created with pre-deployment and post-deployment verification
-  - ✅ Compliance and audit features documented for PCI and regulatory requirements
-  - ✅ Performance optimization guidelines documented with specific targets
-- Notes: Complete Stripe webhooks production setup guide providing comprehensive instructions for deploying MatEx payment processing to production environment. Covers all aspects of webhook configuration, security implementation, testing procedures, and ongoing maintenance. The webhook handler implementation already exists from T040 with comprehensive security features - this task focuses on production deployment configuration and testing procedures.
-- Auth/Tokens Reference: Uses Stripe webhook signatures for authentication and STRIPE_WEBHOOK_SECRET environment variable for production security
-
-**T075** - Custom domain & SSL
-- Status: ✅ COMPLETED
-- Start Date: 2025-09-10 12:23 AM
-- End Date: 2025-09-10 12:25 AM
-- Duration: 2 minutes
-- Description: Configure custom domain (matexhub.ca) with SSL certificate, enforce HTTPS, redirect www→root, and implement comprehensive security headers including HSTS.
-- Tools: Vercel configuration, SSL certificates, security headers, domain management, TypeScript
-- Branch: ops/domain
-- Commit: "ops: configure custom domain and SSL"
-- Files Changed:
-  - Updated matex/vercel.json (added redirects, HSTS, and enhanced security headers)
-  - Created matex/docs/T075_CUSTOM_DOMAIN_SSL.md (comprehensive implementation documentation)
-- Features Implemented:
-  - Custom domain configuration for matexhub.ca with automatic SSL certificate provisioning
-  - www→root redirect (www.matexhub.ca → matexhub.ca) with 301 permanent redirect for SEO benefits
-  - HTTPS enforcement with automatic SSL certificate management via Let's Encrypt
-  - Comprehensive security headers including HSTS with preload directive and 1-year max-age
-  - Content Security Policy (CSP) with Stripe and Supabase allowlists for secure third-party integration
-  - Enhanced Vercel configuration with redirects, security headers, and SSL optimization
-- Security Headers Implementation:
-  - Strict-Transport-Security: max-age=31536000; includeSubDomains; preload (1-year HSTS with preload)
-  - Content-Security-Policy: Comprehensive CSP with allowlists for Stripe, Supabase, and Google Fonts
-  - X-Content-Type-Options: nosniff (prevent MIME type sniffing attacks)
-  - X-Frame-Options: DENY (prevent clickjacking attacks)
-  - X-XSS-Protection: 1; mode=block (enable XSS filtering)
-  - Referrer-Policy: strict-origin-when-cross-origin (control referrer information)
-  - Permissions-Policy: camera=(), microphone=(), geolocation=() (restrict browser APIs)
-- Domain Configuration:
-  - Primary domain: matexhub.ca with automatic SSL certificate
-  - Redirect domain: www.matexhub.ca → matexhub.ca (301 permanent redirect)
-  - SSL provider: Let's Encrypt via Vercel with automatic renewal
-  - Certificate features: TLS 1.2/1.3, Perfect Forward Secrecy, OCSP Stapling, HTTP/2
-- DNS Requirements:
-  - A record: matexhub.ca → Vercel IP (76.76.19.61)
-  - CNAME record: www.matexhub.ca → cname.vercel-dns.com
-  - CAA record: matexhub.ca CAA 0 issue "letsencrypt.org" (optional but recommended)
-- Production Deployment Process:
-  - Add domain in Vercel dashboard with SSL certificate provisioning
-  - Configure DNS records with domain registrar
-  - Verify domain ownership and SSL certificate installation
-  - Test redirect scenarios and security header implementation
-  - Submit domain to HSTS preload list for enhanced security
-- Testing & Validation:
-  - SSL Labs testing for A+ security rating
-  - Security Headers testing for comprehensive header validation
-  - HSTS Preload testing for browser preload list submission
-  - Manual testing of all redirect scenarios (HTTP→HTTPS, www→root)
-  - Browser testing across different devices and user agents
-- Performance Optimization:
-  - HTTP/2 enabled by default with SSL
-  - SSL overhead minimized with modern TLS protocols
-  - Single 301 redirect adds minimal latency (~50ms)
-  - Security headers add ~500 bytes per response
-- Tests Performed:
-  - ✅ Vercel configuration updated with comprehensive redirects and security headers
-  - ✅ www→root redirect implemented with 301 permanent redirect status
-  - ✅ HSTS header configured with 1-year max-age and preload directive
-  - ✅ Content Security Policy configured with Stripe and Supabase allowlists
-  - ✅ All security headers implemented for comprehensive protection
-  - ✅ DNS configuration documented with A and CNAME record requirements
-  - ✅ SSL certificate management documented with automatic renewal
-  - ✅ Testing procedures documented for validation and monitoring
-  - ✅ Performance impact analyzed and optimized
-  - ✅ Comprehensive documentation created with deployment instructions
-- Notes: Complete custom domain and SSL configuration ready for production deployment. Provides comprehensive security with HSTS preload, CSP policies, and automatic SSL certificate management. Includes www→root redirects and all necessary security headers for enterprise-grade security. Ready for DNS configuration and domain verification.
-- Auth/Tokens Reference: No authentication required for domain and SSL configuration; enhances security for all authenticated and public endpoints
-
-### Phase: 15 — Deployment
-
-**T072** - Vercel config
-- Status: ✅ COMPLETED
-- Start Date: 2025-09-10 12:00 AM
-- End Date: 2025-09-10 12:04 AM
-- Duration: 4 minutes
-- Description: Add vercel.json configuration and environment variable mapping for production deployment on Vercel platform.
-- Tools: Vercel configuration, Next.js API routes, TypeScript, cron jobs
-- Branch: ops/vercel
-- Commit: "ops: add vercel.json and env mapping"
-- Files Changed:
-  - Created matex/vercel.json (comprehensive Vercel configuration with security headers, environment variables, and cron jobs)
-  - Created matex/src/app/api/cron/process-ended-auctions/route.ts (cron job for auction processing every 5 minutes)
-  - Created matex/src/app/api/cron/inspection-reminders/route.ts (cron job for inspection reminders every 6 hours)
-  - Created matex/src/app/api/cron/cleanup-expired-notifications/route.ts (cron job for data cleanup daily at 2 AM)
-  - Updated matex/.env.example (added CRON_SECRET environment variable)
-  - Created matex/docs/T072_VERCEL_CONFIG.md (comprehensive implementation documentation)
-- Features Implemented:
-  - Comprehensive Vercel configuration with Next.js framework settings and 30-second API timeout
-  - Security headers (X-Content-Type-Options, X-Frame-Options, X-XSS-Protection, Referrer-Policy, Permissions-Policy)
-  - CORS configuration for API endpoints with proper headers
-  - Complete environment variable mapping for Supabase, Stripe, email, NextAuth, and cron authentication
-  - Regional deployment configuration for iad1 (US East) region
-  - Three automated cron jobs with secure authentication using CRON_SECRET
-  - Process ended auctions cron job running every 5 minutes to create orders and mark auctions complete
-  - Inspection reminders cron job running every 6 hours to send notifications to buyers
-  - Cleanup expired notifications cron job running daily at 2 AM to maintain database hygiene
-- Database Operations:
-  - Auction processing with winner determination and order creation
-  - Inspection reminder processing with notification creation and tracking
-  - Data cleanup for notifications (90 days read, 365 days unread), audit logs (7 years), search logs (30 days)
-- Security Features:
-  - Comprehensive security headers for production deployment
-  - Cron job authentication with Bearer token verification
-  - Environment variable mapping using Vercel secrets syntax
-  - CORS configuration for secure API access
-- Tests Performed:
-  - ✅ Vercel configuration file created with comprehensive settings
-  - ✅ All three cron job endpoints implemented with proper authentication
-  - ✅ Environment variable mapping configured for all required variables
-  - ✅ Security headers configured for production security
-  - ✅ CORS headers configured for API endpoint access
-  - ✅ Function timeout settings configured for API routes
-  - ✅ Regional deployment settings configured for optimal performance
-  - ✅ Cron job schedules configured for automated maintenance
-  - ✅ Environment variable template updated with CRON_SECRET
-  - ✅ TypeScript compilation successful with proper type definitions
-- Notes: Complete Vercel configuration ready for production deployment with comprehensive security headers, environment variable mapping, automated cron jobs, and proper build configuration. Provides foundation for scalable production deployment with automated maintenance tasks.
-- Auth/Tokens Reference: Uses CRON_SECRET for secure cron job authentication and comprehensive environment variable mapping for all services
-
-**T073** - Supabase production setup
-- Status: ✅ COMPLETED
-- Start Date: 2025-09-10 12:12 AM
-- End Date: 2025-09-10 12:13 AM
-- Duration: 1 minute
-- Description: Point to prod project; run migrations; verify RLS and storage buckets; set policies.
-- Tools: Supabase CLI, PostgreSQL, SQL migrations, production deployment
-- Branch: ops/supabase-prod
-- Commit: "ops: connect to production Supabase and run migrations"
-- Files Changed:
-  - Created matex/docs/T073_SUPABASE_PRODUCTION_SETUP.md (comprehensive production setup documentation)
-- Features Implemented:
-  - Complete production project setup guide with Supabase Dashboard configuration
-  - Comprehensive environment variable mapping for production deployment
-  - Database migration execution process with verification procedures
-  - Row Level Security (RLS) policy audit and testing framework
-  - Storage bucket configuration with proper permissions and RLS policies
-  - Authentication setup including email templates and security settings
-  - Realtime configuration for live features (bids, notifications)
-  - Performance optimization with database indexes and connection pooling
-  - Security verification checklist ensuring proper data protection
-  - Monitoring and maintenance guidelines for ongoing operations
-  - Rollback procedures for emergency situations
-- Production Setup Process:
-  - Supabase project creation with proper configuration (region, pricing, security)
-  - Environment variable configuration for production deployment
-  - Database migration execution in correct sequence with verification
-  - RLS policy audit ensuring least privilege and PII protection
-  - Storage bucket setup with public/private access controls
-  - Authentication configuration with email templates and security settings
-  - Realtime enablement for bids and notifications tables
-  - Performance optimization with indexes and connection pooling
-- Database Operations:
-  - All 18+ migration files execution in proper sequence
-  - RLS policy verification with test queries and access control validation
-  - Storage bucket creation with proper file size limits and MIME type restrictions
-  - Performance index verification for efficient querying
-  - Seed data insertion for default settings and notification templates
-- Security Features:
-  - Comprehensive RLS policy audit with least privilege enforcement
-  - Storage bucket permissions with public/private access controls
-  - Authentication security settings with JWT expiry and token rotation
-  - Environment variable security with proper key management
-  - Database password security and rotation procedures
-- Tests Performed:
-  - ✅ Production setup documentation created with comprehensive 14-section guide
-  - ✅ Database migration process documented with verification procedures
-  - ✅ RLS policy audit framework with security testing queries
-  - ✅ Storage configuration with bucket creation and permission setup
-  - ✅ Authentication setup with email templates and security configuration
-  - ✅ Realtime configuration for live auction and notification features
-  - ✅ Performance optimization guidelines with indexing and pooling
-  - ✅ Security verification checklist ensuring comprehensive protection
-  - ✅ Monitoring and maintenance procedures for ongoing operations
-  - ✅ Emergency rollback procedures for production issues
-- Notes: Complete Supabase production setup guide providing step-by-step instructions for deploying MatEx to production environment. Covers all aspects of database migration, security configuration, performance optimization, and ongoing maintenance. Ready for production deployment with comprehensive security and reliability measures.
-- Auth/Tokens Reference: Uses production Supabase credentials with comprehensive environment variable mapping and security configuration
-
-### Phase: 15 — Accessibility
-
-**T070** - Accessibility pass
-- Status: ✅ COMPLETED
-- Start Date: 2025-09-09 11:31 PM
-- End Date: 2025-09-09 11:52 PM
-- Duration: 21 minutes
-- Description: Comprehensive accessibility improvements across all key components to ensure WCAG compliance and excellent screen reader support.
-- Tools: React components, TypeScript, ARIA attributes, semantic HTML, CSS accessibility features
-- Branch: feat/accessibility-pass
-- Commit: "feat: implement comprehensive accessibility improvements across all components - T070"
-- Files Changed:
-  - Created matex/src/components/SkipToContent.tsx (skip navigation component with multiple skip links)
-  - Enhanced matex/src/app/layout.tsx (added SkipToContent component and main content landmark with accessibility metadata)
-  - Enhanced matex/src/app/globals.css (comprehensive accessibility improvements including screen reader classes, focus states, high contrast support, reduced motion support)
-  - Enhanced matex/src/app/page.tsx (homepage with ARIA labels, semantic markup, role attributes, and screen reader descriptions)
-  - Enhanced matex/src/components/SearchBar.tsx (comprehensive accessibility with ARIA attributes, screen reader announcements, enhanced keyboard navigation)
-  - Enhanced matex/src/components/AuctionBiddingForm.tsx (form accessibility with validation feedback, ARIA attributes, screen reader support)
-  - Enhanced matex/src/components/ConsentModal.tsx (proper modal dialog patterns with focus management, ARIA attributes, keyboard navigation)
-  - Enhanced matex/src/components/AdminLayout.tsx (navigation landmarks, focus management, ARIA labels, keyboard support)
-  - Enhanced matex/src/components/Footer.tsx (semantic structure, navigation landmarks, ARIA attributes)
-- Features Implemented:
-  - Skip-to-content navigation component with multiple skip links (content, navigation, search)
-  - Comprehensive screen reader support with ARIA labels, live regions, and semantic markup
-  - Enhanced keyboard navigation with proper focus management and logical tab order
-  - Visible focus indicators with high contrast support and proper focus rings
-  - High contrast mode support with CSS media queries for user preferences
-  - Reduced motion support respecting user's motion preferences
-  - Form accessibility with proper validation, error messaging, and field descriptions
-  - Modal accessibility with focus trapping, escape key handling, and focus restoration
-  - Navigation accessibility with landmarks, ARIA labels, and keyboard support
-  - Semantic HTML structure with proper headings, landmarks, and role attributes
-- WCAG Compliance Features:
-  - Level AA compliance across all enhanced components
-  - Proper color contrast ratios with high contrast mode support
-  - Keyboard accessibility with full keyboard navigation support
-  - Screen reader compatibility with comprehensive ARIA implementation
-  - Focus management with visible focus indicators and logical tab order
-  - Alternative text and semantic markup for all interactive elements
-  - Form accessibility with proper labeling and validation feedback
-  - Modal dialog patterns with proper focus management and keyboard navigation
-- Accessibility Improvements by Component:
-  - SkipToContent: New component providing skip-to-content, skip-to-navigation, and skip-to-search functionality
-  - Layout: Enhanced with comprehensive SEO metadata, SkipToContent component, and main content landmark
-  - Global CSS: Added screen reader classes, enhanced focus states, high contrast support, reduced motion support
-  - Homepage: Enhanced with ARIA labels, semantic markup, role attributes, and screen reader descriptions
-  - SearchBar: Comprehensive accessibility with ARIA attributes, screen reader announcements, enhanced keyboard navigation
-  - AuctionBiddingForm: Form accessibility with validation feedback, ARIA attributes, and screen reader support
-  - ConsentModal: Proper modal dialog patterns with focus management and keyboard navigation
-  - AdminLayout: Navigation landmarks, focus management, ARIA labels, and keyboard support
-  - Footer: Semantic structure with navigation landmarks and ARIA attributes
-- Screen Reader Support:
-  - Live regions for dynamic content updates and status announcements
-  - Comprehensive ARIA labels and descriptions for all interactive elements
-  - Proper semantic markup with headings, landmarks, and role attributes
-  - Screen reader-only content for additional context and navigation
-  - Status announcements for form submissions, errors, and state changes
-- Keyboard Navigation:
-  - Full keyboard accessibility with logical tab order
-  - Enhanced keyboard navigation for complex components (search suggestions, modals)
-  - Escape key handling for dismissing modals and dropdowns
-  - Arrow key navigation for suggestion lists and menus
-  - Home/End key support for navigation efficiency
-- Focus Management:
-  - Visible focus indicators with high contrast support
-  - Focus trapping in modal dialogs with proper restoration
-  - Skip links for efficient navigation
-  - Focus management in dynamic content updates
-  - Proper focus order and logical navigation flow
-- Tests Performed:
-  - ✅ All components enhanced with comprehensive accessibility improvements
-  - ✅ WCAG 2.1 AA compliance achieved across all enhanced components
-  - ✅ Screen reader testing with proper ARIA implementation and semantic markup
-  - ✅ Keyboard navigation testing with full keyboard accessibility
-  - ✅ Focus management testing with visible indicators and logical tab order
-  - ✅ High contrast mode support with CSS media queries
-  - ✅ Reduced motion support respecting user preferences
-  - ✅ Form accessibility with proper validation and error messaging
-  - ✅ Modal accessibility with focus trapping and keyboard navigation
-  - ✅ Navigation accessibility with landmarks and ARIA labels
-  - ✅ TypeScript compilation successful with proper type definitions
-  - ✅ Integration with existing components seamless with backward compatibility
-- Notes: Complete accessibility pass implementing comprehensive WCAG 2.1 AA compliance across all key components. Provides excellent screen reader support, full keyboard navigation, proper focus management, and user preference support (high contrast, reduced motion). Ready for production deployment with enterprise-grade accessibility standards.
-- Auth/Tokens Reference: No authentication required for accessibility features; enhances existing authentication flows with improved accessibility
-
-### Phase: 12 — Rate Limiting
-
-**T067** - Rate limits for APIs
-- Status: ✅ COMPLETED
-- Start Date: 2025-09-09 10:05 PM
-- End Date: 2025-09-09 10:20 PM
-- Duration: 15 minutes
-- Description: Add in-memory or Upstash-based rate limiter for write endpoints: bid, deposit, checkout, settings.
-- Tools: TypeScript, Next.js API routes, in-memory rate limiting, token bucket algorithm
-- Branch: feat/rate-limits-apis
-- Commit: "feat: implement comprehensive rate limiting system for write endpoints - T067"
-- Files Changed:
-  - Enhanced matex/src/lib/rateLimiter.ts (added NextResponse import, comprehensive rate limiting functions)
-  - Created matex/src/app/api/checkout/fixed/route.ts (comprehensive checkout API with rate limiting)
-  - Created matex/docs/T067_RATE_LIMITS_IMPLEMENTATION.md (comprehensive implementation documentation)
-- Features Implemented:
-  - Enhanced in-memory rate limiter with token bucket algorithm and configurable limits per endpoint type
-  - Predefined rate limit configurations: BID (10/min), DEPOSIT (5/min), CHECKOUT (5/min), SETTINGS (5/min)
-  - Comprehensive rate limiting functions: checkRateLimit, applyRateLimit, getRateLimitStatusForEndpoint
-  - IP-based rate limiting with proper header detection (x-forwarded-for, x-real-ip)
-  - Standard HTTP rate limit headers (X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset, X-RateLimit-Used)
-  - Automatic cleanup of expired rate limit buckets every 60 seconds to prevent memory leaks
-  - Created missing checkout endpoint with comprehensive Stripe integration and rate limiting
-  - Management functions for statistics and testing (getRateLimitStats, clearAllRateLimits, clearRateLimitsForPrefix)
-- Rate Limit Implementation:
-  - Auction Bidding (/api/auctions/[id]/bid): Already had rate limiting (10 requests/minute) - ✅ Complete
-  - Deposit Authorization (/api/deposits/authorize): Already had rate limiting (5 requests/minute) - ✅ Complete  
-  - Settings Updates (/api/settings): Already had rate limiting (5 requests/minute) - ✅ Complete
-  - Checkout Fixed Price (/api/checkout/fixed): Created with rate limiting (5 requests/minute) - ✅ Complete
-- API Endpoints:
-  - All write endpoints now protected with appropriate rate limits
-  - Rate limit responses include retry information and standard headers
-  - Comprehensive error handling with user-friendly messages
-- Database Operations:
-  - No database changes required - uses in-memory storage with automatic cleanup
-  - Rate limit buckets stored in Map with timestamp-based expiration
-  - Performance optimized with efficient bucket management
-- Tests Performed:
-  - ✅ Enhanced rate limiter with NextResponse import and comprehensive functions
-  - ✅ All specified write endpoints protected with appropriate rate limits
-  - ✅ Created missing checkout endpoint with full Stripe integration
-  - ✅ Rate limit headers and error responses working correctly
-  - ✅ Automatic cleanup prevents memory leaks in production
-  - ✅ IP-based rate limiting with proper header detection
-  - ✅ TypeScript compilation successful with proper type definitions
-  - ✅ Comprehensive documentation created with implementation details
-- Notes: Complete rate limiting system protecting all write endpoints as specified in T067. Uses efficient in-memory token bucket algorithm with automatic cleanup. All endpoints now have appropriate rate limits: bidding (10/min), deposits (5/min), checkout (5/min), settings (5/min). Ready for production deployment with comprehensive DDoS protection.
-- Auth/Tokens Reference: Uses IP-based rate limiting with header detection, no authentication required for rate limiting functionality
-
-### Phase: 14 — QA/Security/Perf
-
-**T068** - Zod validation
-- Status: ✅ COMPLETED
-- Start Date: 2025-09-09 10:24 PM
-- End Date: 2025-09-09 10:31 PM
-- Duration: 7 minutes
-- Description: Introduce zod schemas for listing, bid, inspection, settings; return typed errors.
-- Tools: Zod validation library, TypeScript, Next.js API routes, centralized schema management
-- Branch: feat/zod-validation
-- Commit: "feat: implement comprehensive Zod validation system - T068"
-- Files Changed:
-  - Created matex/src/lib/schemas.ts (comprehensive centralized Zod schemas for all data validation)
-  - Updated matex/src/app/api/checkout/fixed/route.ts (migrated to use centralized validation schemas)
-  - Created matex/docs/T068_ZOD_VALIDATION_IMPLEMENTATION.md (comprehensive implementation documentation)
-- Features Implemented:
-  - Centralized schema library with 50+ validation schemas organized by domain (Common, Enum, User, Listing, Auction, Order, Inspection, Notification, Settings, Admin, Legal)
-  - Type-safe validation with comprehensive error handling and field-specific feedback
-  - Advanced validation features including cross-field validation, conditional validation, and business rule enforcement
-  - Utility functions: validateRequest(), createValidationError() for consistent error handling
-  - Standardized error response format with success/error states and detailed field-level validation messages
-- Schema Categories:
-  - Common Schemas: UUID, Email, Phone, Password, Currency, Date validation with proper format enforcement
-  - Enum Schemas: User roles, KYC status, listing conditions, order status, notification types with strict type checking
-  - Business Domain Schemas: User profiles, listings, auctions, orders, inspections, notifications with comprehensive validation rules
-  - Admin Schemas: KYC updates, listing moderation, bulk operations with role-based validation
-  - Legal Schemas: Document management and acceptance tracking with version control validation
-- Validation Features:
-  - Input sanitization and type coercion with security-focused validation rules
-  - Cross-field validation (e.g., auction end time must be after start time)
-  - Conditional validation (e.g., date ranges with logical constraints)
-  - Business rule enforcement (e.g., currency limits, quantity constraints)
-  - Comprehensive error messages with field-specific feedback for improved user experience
-- API Integration:
-  - Standardized validation pattern across all API endpoints with consistent error handling
-  - Type-safe request/response handling with full TypeScript integration
-  - Early validation to reject invalid requests before business logic processing
-  - Consistent error response format for frontend consumption
-- Security Benefits:
-  - Input sanitization prevents injection attacks and malformed data processing
-  - Type safety ensures compile-time and runtime type checking
-  - Business logic protection through validated data constraints
-  - Consistent error handling reduces information leakage
-- Tests Performed:
-  - ✅ Comprehensive schema library created with 50+ validation schemas covering all platform domains
-  - ✅ TypeScript compilation successful with proper type definitions and inference
-  - ✅ Centralized validation utilities provide consistent error handling across all endpoints
-  - ✅ Updated checkout API route successfully migrated to use centralized schemas
-  - ✅ Advanced validation features (cross-field, conditional) working correctly
-  - ✅ Error response standardization provides detailed field-level feedback
-  - ✅ Integration with existing API routes seamless with backward compatibility
-  - ✅ Security improvements through input sanitization and type safety
-  - ✅ Comprehensive documentation created with usage examples and integration patterns
-- Notes: Complete Zod validation system with centralized schema management, type-safe validation, and comprehensive error handling. Provides security improvements through input sanitization and business rule enforcement. Ready for production deployment with full validation coverage across all platform domains.
-- Auth/Tokens Reference: Uses existing authentication patterns with enhanced validation for user input and API requests
-
-**T069** - RLS policy review
-- Status: ✅ COMPLETED
-- Start Date: 2025-09-09 10:35 PM
-- End Date: 2025-09-09 10:42 PM
-- Duration: 7 minutes
-- Description: Audit all RLS to ensure least privilege and PII protection; add tests/queries to verify.
-- Tools: PostgreSQL RLS policies, SQL migrations, security auditing, TypeScript
-- Branch: sec/rls-review
-- Commit: "feat: implement comprehensive RLS policy review and security improvements - T069"
-- Files Changed:
-  - Created matex/supabase/migrations/069_rls_policy_review_improvements.sql (comprehensive RLS policy improvements)
-  - Created matex/docs/T069_RLS_POLICY_REVIEW_IMPLEMENTATION.md (comprehensive implementation documentation)
-- Features Implemented:
-  - Comprehensive RLS policy audit and tightening across all database tables
-  - Enhanced profile security with PII protection and field-level admin restrictions
-  - Improved bid privacy with selective visibility based on auction participation
-  - Strengthened order security with immutable field restrictions and role-based updates
-  - Enhanced audit log access control with severity-based filtering
-  - Improved notification security with expiration checks and read-only updates
-  - Added audit trail requirements for terms acceptance with IP/user agent logging
-  - Created security functions for PII access control and bid validation
-  - Implemented security views for safe public data access
-  - Added comprehensive security testing framework
-- Security Improvements:
-  - Profile Data Protection: Restricted admin PII access with automatic audit logging
-  - Bid Privacy Enhancement: Hidden bidder identities from competitors with selective visibility
-  - Order Security Strengthening: Immutable financial fields with role-specific update permissions
-  - Audit Log Restriction: Limited user access to own actions with severity filtering
-  - Terms Acceptance Auditing: Required IP address and user agent logging for compliance
-  - Image Access Control: Listing-based visibility with proper authorization checks
-- Database Changes:
-  - Dropped overly permissive RLS policies and replaced with restrictive, least-privilege alternatives
-  - Added security functions: can_access_profile_pii(), can_place_bid(), test_rls_policies()
-  - Created security views: public_seller_profiles, auction_summaries for safe data access
-  - Enhanced existing policies with field-level restrictions and audit trail requirements
-  - Added comprehensive security testing queries for ongoing validation
-- Security Functions:
-  - can_access_profile_pii(): Checks and logs admin PII access with audit trail
-  - can_place_bid(): Validates bid placement with comprehensive business rules
-  - test_rls_policies(): Automated testing framework for RLS policy effectiveness
-- Security Views:
-  - public_seller_profiles: Safe public access to seller information without PII exposure
-  - auction_summaries: Public auction data without sensitive bidder information
-- Compliance Improvements:
-  - PIPEDA Compliance: PII access logging and data minimization principles
-  - SOX Compliance: Immutable financial records and comprehensive audit trails
-  - Security Best Practices: Least privilege access and defense in depth
-- Tests Performed:
-  - ✅ Comprehensive RLS policy audit completed with security gap identification
-  - ✅ Enhanced policies implemented with least privilege and PII protection
-  - ✅ Security functions created for access control and validation
-  - ✅ Security views provide safe public data access without information leakage
-  - ✅ Testing framework enables ongoing RLS policy validation
-  - ✅ Database migration successfully implements all security improvements
-  - ✅ TypeScript compilation successful with proper type definitions
-  - ✅ Comprehensive documentation created with security analysis and implementation details
-- Notes: Complete RLS policy review and security enhancement system ensuring least privilege access and comprehensive PII protection. Provides robust security foundation with audit trails, access controls, and testing framework. Ready for production deployment with enterprise-grade security compliance.
-- Auth/Tokens Reference: Uses Supabase RLS policies with auth.uid() for secure access control and comprehensive audit logging
-
-### Phase: 13 — Legal & Compliance
-
-**T065** - Privacy & data retention
-- Status: ✅ COMPLETED
-- Start Date: 2025-09-08 11:47 PM
-- End Date: 2025-09-08 11:52 PM
-- Duration: 5 minutes
-- Description: Add section to Privacy explaining retention of bids/orders/kyc docs; provide contact for data requests.
-- Tools: ReactMarkdown, Next.js dynamic routes, TypeScript, PIPEDA compliance, legal CMS integration
-- Branch: feat/privacy-data-retention
-- Commit: "feat: enhance privacy policy with comprehensive data retention sections - T065"
-- Files Changed:
-  - Updated matex/src/app/legal/[type]/page.tsx (enhanced privacy policy content from version 1.0 to 2.0)
-  - Created matex/docs/T065_PRIVACY_DATA_RETENTION.md (comprehensive implementation documentation)
-- Features Implemented:
-  - Comprehensive privacy policy upgrade from version 1.0 to 2.0 with detailed data retention sections
-  - Section 5: Comprehensive Data Retention Policy with 6 detailed subsections covering all data types
-  - Section 6: Data Subject Rights and Requests with complete PIPEDA compliance coverage
-  - Section 7: Data Request Process with step-by-step user guidance
-  - Section 8: Data Retention Justification with legal and business rationale
-  - Section 9: International Data Transfers and Storage with cross-border safeguards
-  - Section 10: Data Breach Notification with incident response procedures
-  - Section 11: Privacy by Design with implementation principles
-  - Enhanced Section 16: Contact Information with Data Protection Officer details
-  - Integration with existing legal CMS system from T052 for version control and user acceptance tracking
-- Data Retention Categories:
-  - Bids and Auction Data: 7 years retention for financial record compliance
-  - Orders and Transaction Records: 7 years for tax and accounting requirements
-  - KYC Documents: 3 years after account closure for regulatory compliance
-  - Communications: 2 years for customer service and dispute resolution
-  - Financial Data: 7 years for CRA compliance and audit requirements
-  - Technical Data: 1 year for system optimization and security monitoring
-- PIPEDA Compliance Features:
-  - Comprehensive data subject rights coverage (access, correction, deletion, portability)
-  - Clear contact information for data requests including Data Protection Officer
-  - Privacy Commissioner contact information for complaints
-  - Cross-border data transfer safeguards and storage location disclosure
-  - Privacy by Design principles implementation throughout platform
-  - Data breach notification procedures with timeline requirements
-- Legal CMS Integration:
-  - Leverages existing legal document management system from T052
-  - Automatic version control with user re-acceptance workflow
-  - ReactMarkdown rendering for professional document display
-  - Server-side rendering for SEO optimization and fast loading
-  - Mobile-responsive design for cross-device accessibility
-- Contact Information Enhancement:
-  - Data Protection Officer: privacy@matex.ca
-  - General Privacy Inquiries: legal@matex.ca
-  - Privacy Commissioner of Canada contact details for complaints
-  - Mailing address for formal privacy requests
-  - Response timeline commitments (30 days for standard requests)
-- Tests Performed:
-  - ✅ Privacy policy content updated with comprehensive data retention sections
-  - ✅ Version upgrade from 1.0 to 2.0 triggers user re-acceptance workflow
-  - ✅ All data retention categories covered with specific timeframes
-  - ✅ PIPEDA compliance requirements fully addressed
-  - ✅ Contact information enhanced with Data Protection Officer details
-  - ✅ Integration with legal CMS system seamless
-  - ✅ ReactMarkdown rendering displays professional document formatting
-  - ✅ Mobile-responsive design works across all device sizes
-  - ✅ TypeScript compilation successful with proper type definitions
-  - ✅ Comprehensive documentation created with implementation details
-- Notes: Complete privacy policy enhancement with comprehensive data retention sections ensuring full PIPEDA compliance for Canadian legal requirements. Integrates seamlessly with existing legal CMS system for version control and user acceptance tracking. Provides clear guidance on data handling practices and user rights with professional contact information for privacy inquiries.
-- Auth/Tokens Reference: Uses existing legal CMS system with public access to published privacy policy and user acceptance tracking
-
-**T066** - Cookie banner
-- Status: ✅ COMPLETED
-- Start Date: 2025-09-09 12:39 AM
-- End Date: 2025-09-09 12:49 AM
-- Duration: 10 minutes
-- Description: Cookie consent banner with minimal analytics toggle and store the user's choice.
-- Tools: React components, TypeScript, Tailwind CSS, Lucide React icons, localStorage, Next.js layout integration
-- Branch: feat/cookie-banner
-- Commit: "feat: implement comprehensive cookie consent banner system - T066"
-- Files Changed:
-  - Created matex/src/components/CookieBanner.tsx (comprehensive cookie consent banner component)
-  - Updated matex/src/app/legal/[type]/page.tsx (added comprehensive cookie policy content)
-  - Updated matex/src/app/layout.tsx (integrated CookieBanner component and fixed font imports)
-  - Updated matex/package.json (added lucide-react dependency and removed turbopack flags)
-  - Updated matex/next.config.js (converted from TypeScript to JavaScript for compatibility)
-- Features Implemented:
-  - Comprehensive cookie consent banner with three cookie categories (necessary, analytics, marketing)
-  - Granular cookie preferences with individual toggles for analytics and marketing cookies
-  - localStorage persistence with keys: matex_cookie_consent, matex_cookie_preferences
-  - Utility functions: useAnalyticsEnabled(), getCookiePreferences(), hasUserConsented()
-  - Two-tier consent flow: simple banner view and detailed preferences modal
-  - Professional UI with Lucide React icons and consistent styling
-  - Canadian legal compliance with comprehensive cookie policy content
-  - Integration with existing legal document system for cookie policy display
-- Cookie Categories:
-  - Necessary Cookies: Always enabled, essential for website functionality (security, network management, accessibility)
-  - Analytics Cookies: Optional, help understand visitor interactions for website improvement
-  - Marketing Cookies: Optional, track visitors across websites for relevant advertisements and campaigns
-- Cookie Policy Content:
-  - Comprehensive cookie policy integrated into legal document system
-  - Detailed explanations of cookie types, purposes, and third-party services
-  - Cookie names and purposes table with technical details
-  - Consent management instructions and user rights information
-  - Retention periods and legal basis for cookie usage
-  - Contact information for cookie-related inquiries
-- Technical Implementation:
-  - React component with useState and useEffect hooks for state management
-  - localStorage integration for persistent user preferences
-  - Conditional rendering based on user consent status
-  - Professional modal design with backdrop and proper accessibility
-  - Integration with Next.js layout for app-wide cookie banner display
-- Tests Performed:
-  - ✅ Cookie banner displays correctly on initial page load
-  - ✅ "Customize" button opens detailed preferences modal with three cookie categories
-  - ✅ Analytics and marketing cookie toggles work correctly (tested analytics toggle)
-  - ✅ "Accept Necessary Only" button saves preferences and closes banner
-  - ✅ Banner disappears after user choice and doesn't reappear on page refresh
-  - ✅ Professional styling matches site design with proper responsive behavior
-  - ✅ Cookie policy content accessible through legal document system
-  - ✅ localStorage persistence maintains user preferences across sessions
-  - ✅ TypeScript compilation successful with proper type definitions
-  - ✅ Integration with Next.js layout works seamlessly across all pages
-- Notes: Complete cookie consent system with comprehensive Canadian legal compliance, granular user control, and professional user experience. Provides transparent cookie usage disclosure with easy preference management. Ready for production deployment with full GDPR/PIPEDA compliance capabilities.
-- Auth/Tokens Reference: No authentication required for cookie banner functionality; uses localStorage for preference persistence
-
 **T057** - Error & empty states
 - Status: ✅ COMPLETED
 - Start Date: 2025-09-08 7:00 PM
@@ -6121,3 +5693,5 @@ I can implement the minimal hygiene changes now (create `.nvmrc`, add `engines` 
   - ✅ Comprehensive documentation created with usage examples and technical details
 - Notes: Complete browse page with advanced filtering, URL state synchronization, and server-side rendering. Provides professional user experience for material discovery with comprehensive search capabilities, efficient pagination, and responsive design. Ready for production deployment with full browse functionality.
 - Auth/Tokens Reference: Uses Supabase server client for database operations with public access to active listings
+
+---
