@@ -49,8 +49,8 @@ export default function NotFound() {
         <div className="mt-8 pt-8 border-t border-gray-200">
           <p className="text-sm text-gray-500">
             Need help? Contact our support team at{' '}
-            <a href="mailto:support@matex.ca" className="text-brand-600 hover:text-brand-700">
-              support@matex.ca
+            <a href="mailto:support@matexhub.ca" className="text-brand-600 hover:text-brand-700">
+              support@matexhub.ca
             </a>
           </p>
         </div>

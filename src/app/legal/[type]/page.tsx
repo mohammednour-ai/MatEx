@@ -69,7 +69,7 @@ const getDefaultContent = (type: LegalDocumentType): { title: string; content: s
 
 ## 1. Introduction
 
-Welcome to MatEx ("we," "our," or "us"), Canada's premier material exchange platform. These Terms of Service ("Terms") govern your use of our website and services located at matex.ca (the "Service") operated by MatEx Inc.
+Welcome to MatEx ("we," "our," or "us"), Canada's premier material exchange platform. These Terms of Service ("Terms") govern your use of our website and services located at matexhub.ca (the "Service") operated by MatEx Inc.
 
 By accessing or using our Service, you agree to be bound by these Terms. If you disagree with any part of these terms, then you may not access the Service.
 
@@ -176,7 +176,7 @@ We may terminate or suspend your account immediately, without prior notice or li
 ## 13. Contact Information
 
 For questions about these Terms, please contact us at:
-- Email: legal@matex.ca
+- Email: legal@matexhub.ca
 - Address: [Company Address]
 - Phone: [Company Phone]
 
@@ -188,7 +188,7 @@ For questions about these Terms, please contact us at:
     case 'privacy-policy':
       return {
         title: 'Privacy Policy',
-        version: '1.0',
+        version: '2.0',
         content: `# Privacy Policy
 
 **Effective Date:** ${new Date().toLocaleDateString('en-CA')}
@@ -250,33 +250,172 @@ We may disclose information when required by law or to:
 - Ensure user safety and security
 - Investigate fraud or violations
 
-## 5. Data Retention
+## 5. Comprehensive Data Retention Policy
 
-### 5.1 Account Information
-- Active accounts: Retained while account is active
-- Closed accounts: Retained for 7 years for legal compliance
-- Transaction records: Retained for 7 years for tax and audit purposes
+### 5.1 Account and Profile Information
+- **Active Accounts**: Personal information retained while account remains active
+- **Inactive Accounts**: Account data retained for 2 years after last login
+- **Closed Accounts**: Essential data retained for 7 years for legal compliance
+- **Profile Updates**: Historical profile changes retained for audit purposes
 
-### 5.2 Communication Records
-- Platform messages: Retained for 2 years
-- Support communications: Retained for 3 years
-- Legal notices: Retained permanently
+### 5.2 Transaction and Bidding Data
+- **Bid History**: All bid records retained for 7 years for audit and dispute resolution
+- **Auction Records**: Complete auction data retained for 7 years including:
+  - Bid timestamps and amounts
+  - Bidder identification (anonymized after 2 years)
+  - Auction terms and conditions
+  - Soft close extensions and final results
+- **Order Records**: Transaction details retained for 7 years including:
+  - Purchase agreements and terms
+  - Payment records and receipts
+  - Delivery and fulfillment status
+  - Dispute resolution records
 
-### 5.3 KYC Documents
-- Identity documents: Retained for 7 years after account closure
-- Business registration: Retained for 7 years after account closure
-- Verification records: Retained for audit and compliance purposes
+### 5.3 KYC and Verification Documents
+- **Identity Documents**: Government-issued ID copies retained for 7 years after account closure
+- **Business Registration**: Corporate documents retained for 7 years after account closure
+- **Verification Records**: KYC approval/rejection decisions retained permanently for compliance
+- **Document Metadata**: File names, upload dates, and verification status retained indefinitely
+- **Biometric Data**: If collected, retained only during active verification process
 
-## 6. Your Privacy Rights
+### 5.4 Communication and Support Data
+- **Platform Messages**: User-to-user communications retained for 3 years
+- **Support Tickets**: Customer service interactions retained for 5 years
+- **Email Communications**: Transactional emails retained for 2 years
+- **Legal Notices**: Terms acceptance and legal communications retained permanently
 
-Under PIPEDA and provincial privacy laws, you have the right to:
-- Access your personal information
-- Request correction of inaccurate information
-- Request deletion of information (subject to legal requirements)
-- Withdraw consent where applicable
-- File complaints with privacy commissioners
+### 5.5 Financial and Payment Data
+- **Payment Information**: Credit card details not stored (handled by Stripe)
+- **Transaction Records**: Payment history retained for 7 years for tax compliance
+- **Deposit Records**: Auction deposit history retained for 7 years
+- **Refund Records**: Refund transactions and reasons retained for 7 years
+- **Fee Calculations**: Platform fee records retained for 7 years
 
-## 7. Data Security
+### 5.6 Technical and Usage Data
+- **Log Files**: Server logs retained for 1 year for security and performance
+- **Analytics Data**: Aggregated usage statistics retained for 3 years
+- **Security Logs**: Authentication and security events retained for 2 years
+- **Cookie Data**: Session cookies deleted after logout, persistent cookies expire per settings
+
+## 6. Data Subject Rights and Requests
+
+### 6.1 Access Rights
+You have the right to:
+- Request a copy of all personal information we hold about you
+- Receive information about how your data is processed
+- Obtain details about data sharing and retention periods
+- Access your complete transaction and bidding history
+
+### 6.2 Correction Rights
+You may request correction of:
+- Inaccurate personal information
+- Incomplete profile details
+- Outdated contact information
+- Incorrect business registration details
+
+### 6.3 Deletion Rights
+You may request deletion of:
+- Personal information no longer needed for original purpose
+- Data processed based on consent (where consent is withdrawn)
+- Information processed unlawfully
+- Data subject to legal retention requirements cannot be deleted
+
+### 6.4 Data Portability
+You have the right to:
+- Receive your personal data in a structured, machine-readable format
+- Transfer your data to another service provider
+- Request direct transfer where technically feasible
+
+## 7. Data Request Process
+
+### 7.1 How to Submit Requests
+To exercise your privacy rights, contact our Data Protection Officer:
+- **Email**: privacy@matexhub.ca
+- **Subject Line**: "Data Subject Request - [Type of Request]"
+- **Required Information**:
+  - Full name and account email
+  - Specific request type (access, correction, deletion, portability)
+  - Detailed description of requested information or changes
+  - Government-issued ID for identity verification
+
+### 7.2 Request Processing
+- **Acknowledgment**: Within 3 business days of receipt
+- **Identity Verification**: Required for all requests to protect your privacy
+- **Processing Time**: Up to 30 days for complex requests
+- **Response Format**: Secure email or encrypted file transfer
+- **No Fee**: Most requests processed at no charge
+
+### 7.3 Request Limitations
+We may decline requests that:
+- Cannot be verified due to insufficient identification
+- Are manifestly unfounded or excessive
+- Would adversely affect others' rights and freedoms
+- Conflict with legal retention requirements
+- Compromise security or fraud prevention measures
+
+## 8. Data Retention Justification
+
+### 8.1 Legal Requirements
+- **Tax Records**: 7-year retention required by Canada Revenue Agency
+- **Financial Transactions**: 7-year retention for audit and compliance
+- **KYC Documents**: Required for anti-money laundering compliance
+- **Dispute Resolution**: Extended retention for legal proceedings
+
+### 8.2 Business Purposes
+- **Fraud Prevention**: Historical data needed for pattern recognition
+- **Customer Service**: Transaction history required for support
+- **Platform Improvement**: Usage data for service enhancement
+- **Regulatory Compliance**: Various retention periods for different regulations
+
+### 8.3 Automated Deletion
+- **Scheduled Purging**: Automated deletion when retention periods expire
+- **Data Minimization**: Regular review and removal of unnecessary data
+- **Secure Disposal**: Cryptographic deletion and secure data destruction
+- **Audit Trail**: Deletion activities logged for compliance verification
+
+## 9. International Data Transfers and Storage
+
+### 9.1 Data Location
+- **Primary Storage**: Canadian data centers with Canadian providers
+- **Backup Storage**: Encrypted backups may be stored internationally
+- **Service Providers**: Some processors located outside Canada
+- **Cloud Services**: AWS Canada Central region for primary hosting
+
+### 9.2 Transfer Safeguards
+- **Adequacy Decisions**: Transfers only to countries with adequate protection
+- **Standard Contractual Clauses**: For transfers to non-adequate countries
+- **Binding Corporate Rules**: For multinational service providers
+- **Consent**: Explicit consent for transfers where required
+
+## 10. Data Breach Notification
+
+### 10.1 Breach Response
+- **Detection**: 24/7 monitoring and incident response procedures
+- **Assessment**: Risk evaluation within 24 hours of detection
+- **Containment**: Immediate steps to limit breach impact
+- **Investigation**: Forensic analysis to determine cause and scope
+
+### 10.2 Notification Timeline
+- **Privacy Commissioner**: Within 72 hours of breach discovery
+- **Affected Individuals**: Without undue delay if high risk to rights
+- **Law Enforcement**: If criminal activity suspected
+- **Service Providers**: Immediate notification of relevant parties
+
+## 11. Privacy by Design
+
+### 11.1 Technical Measures
+- **Encryption**: Data encrypted in transit and at rest
+- **Access Controls**: Role-based access with principle of least privilege
+- **Data Minimization**: Collect only necessary information
+- **Pseudonymization**: Personal identifiers replaced where possible
+
+### 11.2 Organizational Measures
+- **Privacy Training**: Regular staff training on privacy requirements
+- **Privacy Impact Assessments**: For new systems and processes
+- **Data Protection Officer**: Dedicated privacy professional oversight
+- **Regular Audits**: Internal and external privacy compliance reviews
+
+## 12. Data Security
 
 We implement appropriate security measures including:
 - Encryption of sensitive data in transit and at rest
@@ -285,11 +424,7 @@ We implement appropriate security measures including:
 - Employee training on privacy and security
 - Incident response procedures
 
-## 8. International Data Transfers
-
-Your information may be processed in Canada and other countries where our service providers operate. We ensure appropriate safeguards are in place for international transfers.
-
-## 9. Cookies and Tracking
+## 13. Cookies and Tracking
 
 We use cookies and similar technologies for:
 - Essential platform functionality
@@ -299,28 +434,216 @@ We use cookies and similar technologies for:
 
 You can control cookie settings through your browser preferences.
 
-## 10. Children's Privacy
+## 14. Children's Privacy
 
 Our services are not intended for individuals under 18 years of age. We do not knowingly collect personal information from children.
 
-## 11. Changes to This Policy
+## 15. Changes to This Policy
 
 We may update this Privacy Policy periodically. We will notify you of significant changes via email or platform notification. Your continued use constitutes acceptance of the updated policy.
 
-## 12. Contact Information
+## 16. Contact Information for Privacy Matters
 
-For privacy-related questions or to exercise your rights, contact us at:
-- Email: privacy@matex.ca
-- Address: [Company Address]
-- Phone: [Company Phone]
+### 16.1 Data Protection Officer
+- **Email**: privacy@matex.ca
+- **Phone**: 1-800-XXX-XXXX
+- **Address**:
+  MatEx Inc.
+  Privacy Office
+  [Street Address]
+  [City, Province, Postal Code]
 
-For complaints, you may also contact:
-- Office of the Privacy Commissioner of Canada
-- Provincial privacy commissioners
+### 16.2 Privacy Complaints
+If you're not satisfied with our response to your privacy concern, you may contact:
+
+**Office of the Privacy Commissioner of Canada**
+- Website: www.priv.gc.ca
+- Phone: 1-800-282-1376
+- Email: info@priv.gc.ca
+
+**Provincial Privacy Commissioners** (where applicable)
+- Contact information varies by province
+- Available at www.priv.gc.ca/en/about-the-opc/what-we-do/provincial-territorial-collaboration/
 
 ---
 
 *Last updated: ${new Date().toLocaleDateString('en-CA')}*`
+      };
+
+    case 'cookie-policy':
+      return {
+        title: 'Cookie Policy',
+        version: '1.0',
+        content: `# Cookie Policy
+
+**Effective Date:** ${new Date().toLocaleDateString('en-CA')}
+
+## 1. Introduction
+
+This Cookie Policy explains how MatEx Inc. ("we," "our," or "us") uses cookies and similar tracking technologies on our website matexhub.ca (the "Service"). This policy should be read alongside our Privacy Policy.
+
+## 2. What Are Cookies
+
+Cookies are small text files that are placed on your device when you visit our website. They help us provide you with a better experience by remembering your preferences and understanding how you use our Service.
+
+## 3. Types of Cookies We Use
+
+### 3.1 Necessary Cookies
+These cookies are essential for the website to function properly and cannot be disabled:
+- **Authentication cookies**: Keep you logged in during your session
+- **Security cookies**: Protect against cross-site request forgery and other security threats
+- **Load balancing cookies**: Ensure optimal performance by distributing traffic
+- **Session cookies**: Maintain your session state across page visits
+
+### 3.2 Analytics Cookies (Optional)
+These cookies help us understand how visitors interact with our website:
+- **Usage analytics**: Track page views, user flows, and feature usage
+- **Performance monitoring**: Monitor site speed and identify technical issues
+- **Error tracking**: Capture and analyze errors to improve user experience
+- **A/B testing**: Compare different versions of features to optimize user experience
+
+We use these analytics cookies only with your consent and the data is anonymized.
+
+### 3.3 Marketing Cookies (Optional)
+These cookies are used for advertising and marketing purposes:
+- **Advertising cookies**: Track your interests to show relevant advertisements
+- **Social media cookies**: Enable sharing content on social media platforms
+- **Conversion tracking**: Measure the effectiveness of our marketing campaigns
+- **Retargeting cookies**: Show you relevant ads on other websites
+
+Marketing cookies are only used with your explicit consent.
+
+## 4. Third-Party Cookies
+
+We may use third-party services that set their own cookies:
+
+### 4.1 Payment Processing
+- **Stripe**: Secure payment processing and fraud prevention
+- **PayPal**: Alternative payment method processing
+
+### 4.2 Analytics Services
+- **Google Analytics**: Website usage analytics (only with consent)
+- **Hotjar**: User behavior analytics and heatmaps (only with consent)
+
+### 4.3 Communication Services
+- **Intercom**: Customer support chat functionality
+- **SendGrid**: Email delivery and tracking
+
+## 5. Cookie Consent and Management
+
+### 5.1 Your Choices
+When you first visit our website, you will see a cookie banner that allows you to:
+- Accept all cookies
+- Accept only necessary cookies
+- Customize your cookie preferences
+- Learn more about our cookie practices
+
+### 5.2 Changing Your Preferences
+You can change your cookie preferences at any time by:
+- Clicking the cookie preferences link in our website footer
+- Accessing your account settings
+- Using your browser's cookie management tools
+- Contacting us directly at privacy@matexhub.ca
+
+### 5.3 Browser Controls
+Most web browsers allow you to control cookies through their settings:
+- **Chrome**: Settings > Privacy and security > Cookies and other site data
+- **Firefox**: Settings > Privacy & Security > Cookies and Site Data
+- **Safari**: Preferences > Privacy > Manage Website Data
+- **Edge**: Settings > Cookies and site permissions > Cookies and site data
+
+## 6. Cookie Retention Periods
+
+### 6.1 Session Cookies
+- Deleted when you close your browser
+- Used for essential functionality during your visit
+
+### 6.2 Persistent Cookies
+- **Authentication cookies**: 30 days or until logout
+- **Preference cookies**: 1 year or until changed
+- **Analytics cookies**: 2 years or until consent withdrawn
+- **Marketing cookies**: 1 year or until consent withdrawn
+
+## 7. Data Protection and Privacy
+
+### 7.1 Personal Data in Cookies
+Most cookies we use do not contain personal information. When they do:
+- Data is encrypted and secure
+- Access is limited to authorized personnel
+- Retention periods are strictly enforced
+- You can request deletion at any time
+
+### 7.2 Cross-Border Transfers
+Some third-party services may transfer cookie data outside Canada:
+- Transfers are made only to countries with adequate protection
+- Standard contractual clauses are used where necessary
+- You can opt out of such transfers by declining optional cookies
+
+## 8. Updates to This Policy
+
+We may update this Cookie Policy from time to time to reflect:
+- Changes in our cookie practices
+- New technologies or services
+- Legal or regulatory requirements
+- User feedback and preferences
+
+We will notify you of significant changes via:
+- Email notification to registered users
+- Prominent notice on our website
+- Updated cookie consent banner
+
+## 9. Legal Basis for Cookie Use
+
+### 9.1 Necessary Cookies
+- **Legal basis**: Legitimate interest in providing essential website functionality
+- **Cannot be disabled**: Required for basic website operation
+
+### 9.2 Optional Cookies
+- **Legal basis**: Your explicit consent
+- **Can be disabled**: You can withdraw consent at any time
+- **Granular control**: Choose specific types of cookies to allow
+
+## 10. Contact Information
+
+If you have questions about our use of cookies or this Cookie Policy:
+
+**Privacy Officer**
+- Email: privacy@matexhub.ca
+- Phone: 1-800-XXX-XXXX
+- Address: MatEx Inc., [Company Address]
+
+**Data Protection Concerns**
+If you're not satisfied with our response, you may contact:
+- Office of the Privacy Commissioner of Canada: www.priv.gc.ca
+- Provincial privacy commissioners (where applicable)
+
+## 11. Technical Information
+
+### 11.1 Cookie Names and Purposes
+| Cookie Name | Purpose | Type | Duration |
+|-------------|---------|------|----------|
+| matex_session | User authentication | Necessary | Session |
+| matex_csrf | Security protection | Necessary | Session |
+| matex_preferences | User preferences | Necessary | 1 year |
+| matex_analytics | Usage analytics | Analytics | 2 years |
+| matex_marketing | Marketing tracking | Marketing | 1 year |
+
+### 11.2 Local Storage
+We may also use local storage for:
+- Saving form data temporarily
+- Storing user interface preferences
+- Caching frequently accessed data
+- Offline functionality support
+
+## 12. Children's Privacy
+
+Our services are not intended for children under 18. We do not knowingly use cookies to collect information from children. If you believe we have inadvertently collected such information, please contact us immediately.
+
+---
+
+*This Cookie Policy was last updated on ${new Date().toLocaleDateString('en-CA')} and is effective immediately.*
+
+For the most current version of this policy, please visit: matexhub.ca/legal/cookie-policy`
       };
 
     case 'refund-policy':
@@ -422,7 +745,7 @@ Under Canadian consumer protection laws, you may have additional rights includin
 ## 9. Contact Information
 
 For refund requests or questions, contact us at:
-- Email: refunds@matex.ca
+- Email: refunds@matexhub.ca
 - Phone: [Company Phone]
 - Support Portal: [Support URL]
 
@@ -448,7 +771,7 @@ This policy may be updated periodically. Changes will be communicated via email 
 
 This document is currently being prepared. Please check back soon or contact us for more information.
 
-For questions, please contact us at legal@matex.ca.
+For questions, please contact us at legal@matexhub.ca.
 
 ---
 
@@ -582,8 +905,8 @@ export default async function LegalPage({ params }: PageProps) {
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 px-6 py-4">
             <p className="text-sm text-gray-600">
               Questions about this document? Contact us at{' '}
-              <a href="mailto:legal@matex.ca" className="text-brand-600 hover:text-brand-700">
-                legal@matex.ca
+              <a href="mailto:legal@matexhub.ca" className="text-brand-600 hover:text-brand-700">
+                legal@matexhub.ca
               </a>
             </p>
             <p className="text-xs text-gray-500 mt-2">

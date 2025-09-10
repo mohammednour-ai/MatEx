@@ -4,17 +4,18 @@ import { z } from 'zod';
 import { allowRequest, getRateLimitStatus } from '@/lib/rateLimiter';
 import { hasUserAcceptedCurrentTerms } from '@/lib/terms';
 import { isDepositAuthorizedForAuction } from '@/lib/deposit-helpers';
-import { 
-  getAuctionWithBids, 
-  getAuctionSettings, 
-  computeAuctionState, 
+import {
+  getAuctionWithBids,
+  getAuctionSettings,
+  computeAuctionState,
   validateBidAmount,
   isInSoftClose,
-  calculateSoftCloseExtension
+  calculateSoftCloseExtension,
+  placeBidWithConcurrencyControl
 } from '@/lib/auction-helpers';
-import { 
+import {
   sendOutbidNotification,
-  sendNewBidNotification 
+  sendNewBidNotification
 } from '@/lib/notification-helpers';
 
 interface BidRequest {
@@ -161,50 +162,29 @@ export async function POST(
 
     // Check if auction is in soft close period
     const inSoftClose = isInSoftClose(auction, settings);
-    let softCloseExtended = false;
-    let newEndTime: string | undefined;
 
-    // Start database transaction for bid insertion and potential soft close extension
-  const { data: insertedBid, error: bidError } = await supabaseServer
-      .from('bids')
-      .insert({
-        auction_id: auctionId,
-        bidder_id: userId,
-        amount_cad: bidData.amount_cad
-      })
-      .select('id, amount_cad, created_at')
-      .single();
+    // Execute bid placement with database-level concurrency control
+    const bidResult = await placeBidWithConcurrencyControl(
+      auctionId,
+      userId,
+      bidData.amount_cad,
+      auction,
+      settings,
+      inSoftClose
+    );
 
-  if (bidError) {
-      console.error('Error inserting bid:', bidError);
+    if (!bidResult.success) {
       return NextResponse.json(
-        { success: false, error: 'Failed to place bid' },
-        { status: 500 }
+        { success: false, error: bidResult.error },
+        { status: bidResult.statusCode || 500 }
       );
     }
 
-    // Handle soft close extension if needed
-    if (inSoftClose) {
-      const extendedEndTime = calculateSoftCloseExtension(auction, settings);
-      
-      const { error: updateError } = await supabaseServer
-        .from('auctions')
-        .update({ end_at: extendedEndTime.toISOString() })
-        .eq('id', auctionId);
-
-      if (updateError) {
-        console.error('Error extending auction end time:', updateError);
-        // Don't fail the bid if soft close extension fails
-        // The bid was successfully placed
-      } else {
-        softCloseExtended = true;
-        newEndTime = extendedEndTime.toISOString();
-      }
-    }
+    const { insertedBid, softCloseExtended, newEndTime } = bidResult;
 
     // Get updated auction state after bid placement
     const updatedAuction = await getAuctionWithBids(auctionId);
-    const updatedAuctionState = updatedAuction 
+    const updatedAuctionState = updatedAuction
       ? computeAuctionState(updatedAuction, settings)
       : auctionState;
 

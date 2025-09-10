@@ -41,13 +41,13 @@ export interface AuctionSettings {
  */
 export async function getAuctionSettings(): Promise<AuctionSettings> {
   const supabase = supabaseServer;
-  
+
   const { data, error } = await supabase
     .from('app_settings')
     .select('key, value')
     .in('key', [
       'auction.soft_close_seconds',
-      'auction.min_increment_strategy', 
+      'auction.min_increment_strategy',
       'auction.min_increment_value',
       'auction.deposit_required',
       'auction.deposit_percent'
@@ -92,25 +92,25 @@ export function computeAuctionState(
   const now = new Date();
   const startTime = new Date(auction.start_at);
   const endTime = new Date(auction.end_at);
-  
+
   const hasStarted = now >= startTime;
   const hasEnded = now >= endTime;
   const isActive = hasStarted && !hasEnded;
-  
+
   // Calculate time left in milliseconds
   const timeLeft = Math.max(0, endTime.getTime() - now.getTime());
-  
+
   // Sort bids by amount (highest first) and get current high bid
   const sortedBids = (auction.bids || [])
     .sort((a, b) => b.amount_cad - a.amount_cad);
-  
-  const currentHighBid = sortedBids.length > 0 
-    ? sortedBids[0].amount_cad 
+
+  const currentHighBid = sortedBids.length > 0
+    ? sortedBids[0].amount_cad
     : auction.listing?.price_cad || 0;
-  
+
   // Calculate minimum next bid based on strategy
   let minNextBid: number;
-  
+
   if (settings.min_increment_strategy === 'percent') {
     // Percentage-based increment
     const incrementAmount = currentHighBid * (settings.min_increment_value / 100);
@@ -119,10 +119,10 @@ export function computeAuctionState(
     // Fixed increment (default)
     minNextBid = currentHighBid + settings.min_increment_value;
   }
-  
+
   // Round to 2 decimal places for currency
   minNextBid = Math.round(minNextBid * 100) / 100;
-  
+
   return {
     isActive,
     timeLeft,
@@ -147,12 +147,12 @@ export async function getAuctionState(auction: AuctionData): Promise<AuctionStat
  */
 export function formatTimeLeft(timeLeftMs: number): string {
   if (timeLeftMs <= 0) return 'Ended';
-  
+
   const seconds = Math.floor(timeLeftMs / 1000);
   const minutes = Math.floor(seconds / 60);
   const hours = Math.floor(minutes / 60);
   const days = Math.floor(hours / 24);
-  
+
   if (days > 0) {
     return `${days}d ${hours % 24}h ${minutes % 60}m`;
   } else if (hours > 0) {
@@ -171,7 +171,7 @@ export function isInSoftClose(auction: AuctionData, settings: AuctionSettings): 
   const now = new Date();
   const endTime = new Date(auction.end_at);
   const softCloseThreshold = endTime.getTime() - (settings.soft_close_seconds * 1000);
-  
+
   return now.getTime() >= softCloseThreshold && now < endTime;
 }
 
@@ -179,7 +179,7 @@ export function isInSoftClose(auction: AuctionData, settings: AuctionSettings): 
  * Calculate new end time for soft close extension
  */
 export function calculateSoftCloseExtension(
-  auction: AuctionData, 
+  auction: AuctionData,
   settings: AuctionSettings
 ): Date {
   const now = new Date();
@@ -195,18 +195,18 @@ export function validateBidAmount(
   settings: AuctionSettings
 ): { isValid: boolean; error?: string } {
   const state = computeAuctionState(auction, settings);
-  
+
   if (!state.isActive) {
     return { isValid: false, error: 'Auction is not active' };
   }
-  
+
   if (bidAmount < state.minNextBid) {
-    return { 
-      isValid: false, 
-      error: `Bid must be at least $${state.minNextBid.toFixed(2)} CAD` 
+    return {
+      isValid: false,
+      error: `Bid must be at least $${state.minNextBid.toFixed(2)} CAD`
     };
   }
-  
+
   // Check if bid exceeds buy now price (if set)
   if (auction.listing?.buy_now_cad && bidAmount >= auction.listing.buy_now_cad) {
     return {
@@ -214,7 +214,7 @@ export function validateBidAmount(
       error: `Bid cannot exceed Buy Now price of $${auction.listing.buy_now_cad.toFixed(2)} CAD`
     };
   }
-  
+
   return { isValid: true };
 }
 
@@ -223,7 +223,7 @@ export function validateBidAmount(
  */
 export async function getAuctionWithBids(auctionId: string): Promise<AuctionData | null> {
   const supabase = supabaseServer;
-  
+
   const { data, error } = await supabase
     .from('auctions')
     .select(`
@@ -240,12 +240,12 @@ export async function getAuctionWithBids(auctionId: string): Promise<AuctionData
     `)
     .eq('id', auctionId)
     .single();
-    
+
   if (error) {
     console.error('Error fetching auction:', error);
     return null;
   }
-  
+
   return data as AuctionData;
 }
 
@@ -254,7 +254,7 @@ export async function getAuctionWithBids(auctionId: string): Promise<AuctionData
  */
 export async function getAuctionByListingId(listingId: string): Promise<AuctionData | null> {
   const supabase = supabaseServer;
-  
+
   const { data, error } = await supabase
     .from('auctions')
     .select(`
@@ -271,11 +271,115 @@ export async function getAuctionByListingId(listingId: string): Promise<AuctionD
     `)
     .eq('listing_id', listingId)
     .single();
-    
+
   if (error) {
     console.error('Error fetching auction by listing ID:', error);
     return null;
   }
-  
+
   return data as AuctionData;
+}
+
+/**
+ * Place bid with database-level concurrency control
+ * Uses row-level locking to prevent race conditions during concurrent bidding
+ */
+export async function placeBidWithConcurrencyControl(
+  auctionId: string,
+  userId: string,
+  bidAmount: number,
+  auction: AuctionData,
+  settings: AuctionSettings,
+  inSoftClose: boolean
+): Promise<{
+  success: boolean;
+  insertedBid?: {
+    id: string;
+    amount_cad: number;
+    created_at: string;
+  };
+  softCloseExtended?: boolean;
+  newEndTime?: string;
+  error?: string;
+  statusCode?: number;
+}> {
+  const supabase = supabaseServer;
+
+  try {
+    // Start a database transaction with row-level locking
+    // This ensures that concurrent bid attempts are serialized
+    const { data: transactionResult, error: transactionError } = await supabase.rpc(
+      'place_bid_with_lock',
+      {
+        p_auction_id: auctionId,
+        p_bidder_id: userId,
+        p_amount_cad: bidAmount,
+        p_soft_close_seconds: settings.soft_close_seconds,
+        p_in_soft_close: inSoftClose
+      }
+    );
+
+    if (transactionError) {
+      console.error('Transaction error in placeBidWithConcurrencyControl:', transactionError);
+
+      // Handle specific error cases
+      if (transactionError.message?.includes('bid_too_low')) {
+        return {
+          success: false,
+          error: 'Bid amount is too low. Another bid may have been placed.',
+          statusCode: 400
+        };
+      }
+
+      if (transactionError.message?.includes('auction_ended')) {
+        return {
+          success: false,
+          error: 'Auction has ended',
+          statusCode: 400
+        };
+      }
+
+      return {
+        success: false,
+        error: 'Failed to place bid due to database error',
+        statusCode: 500
+      };
+    }
+
+    if (!transactionResult) {
+      return {
+        success: false,
+        error: 'No result from bid placement transaction',
+        statusCode: 500
+      };
+    }
+
+    // Parse the result from the stored procedure
+    const result = transactionResult as {
+      bid_id: string;
+      bid_amount: number;
+      bid_created_at: string;
+      soft_close_extended: boolean;
+      new_end_time?: string;
+    };
+
+    return {
+      success: true,
+      insertedBid: {
+        id: result.bid_id,
+        amount_cad: result.bid_amount,
+        created_at: result.bid_created_at
+      },
+      softCloseExtended: result.soft_close_extended,
+      newEndTime: result.new_end_time
+    };
+
+  } catch (error) {
+    console.error('Error in placeBidWithConcurrencyControl:', error);
+    return {
+      success: false,
+      error: 'Internal server error during bid placement',
+      statusCode: 500
+    };
+  }
 }
