@@ -7,6 +7,7 @@
     "generate:logos": "node ./scripts/generate_logos_sharp.js"
   },
   "dependencies": {
+    "nodemailer": "^7.0.6",
     "sharp": "^0.32.5"
   }
 }
