@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Industrial Dashboard - MatEx</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="theme-light">
+    <!-- Header -->
+    <header class="header">
+        <div class="header-left">
+            <button class="sidebar-toggle" id="sidebarToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="logo">
+                <i class="fas fa-industry"></i>
+                <span>MatEx Industrial</span>
+            </div>
+        </div>
+        
+        <nav class="breadcrumbs">
+            <span class="breadcrumb-item">Dashboard</span>
+            <i class="fas fa-chevron-right"></i>
+            <span class="breadcrumb-item active">Overview</span>
+        </nav>
+        
+        <div class="header-right">
+            <div class="search-container">
+                <input type="text" placeholder="Search..." class="search-input">
+                <i class="fas fa-search"></i>
+            </div>
+            
+            <button class="theme-toggle" id="themeToggle">
+                <i class="fas fa-moon"></i>
+            </button>
+            
+            <div class="notifications" id="notificationsBtn">
+                <i class="fas fa-bell"></i>
+                <span class="notification-badge">3</span>
+            </div>
+            
+            <div class="user-profile">
+                <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&crop=face" alt="User" class="user-avatar">
+                <span class="user-name">John Smith</span>
+                <i class="fas fa-chevron-down"></i>
+            </div>
+        </div>
+    </header>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <h3 class="nav-section-title">Main</h3>
+                <ul class="nav-list">
+                    <li class="nav-item active">
+                        <a href="#" class="nav-link">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <i class="fas fa-chart-line"></i>
+                            <span>Analytics</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <i class="fas fa-cogs"></i>
+                            <span>Operations</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="nav-section">
+                <h3 class="nav-section-title">Management</h3>
+                <ul class="nav-list">
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <i class="fas fa-users"></i>
+                            <span>Personnel</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <i class="fas fa-boxes"></i>
+                            <span>Inventory</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <i class="fas fa-wrench"></i>
+                            <span>Maintenance</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="nav-section">
+                <h3 class="nav-section-title">Reports</h3>
+                <ul class="nav-list">
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <i class="fas fa-file-alt"></i>
+                            <span>Production</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <i class="fas fa-shield-alt"></i>
+                            <span>Safety</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- KPI Cards -->
+        <section class="kpi-section">
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-header">
+                        <h3>Production Output</h3>
+                        <i class="fas fa-industry kpi-icon"></i>
+                    </div>
+                    <div class="kpi-value">
+                        <span class="kpi-number">2,847</span>
+                        <span class="kpi-unit">units</span>
+                    </div>
+                    <div class="kpi-trend positive">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>+12.5%</span>
+                    </div>
+                    <div class="kpi-sparkline" id="sparkline1"></div>
+                </div>
+                
+                <div class="kpi-card">
+                    <div class="kpi-header">
+                        <h3>Efficiency Rate</h3>
+                        <i class="fas fa-tachometer-alt kpi-icon"></i>
+                    </div>
+                    <div class="kpi-value">
+                        <span class="kpi-number">94.2</span>
+                        <span class="kpi-unit">%</span>
+                    </div>
+                    <div class="kpi-trend positive">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>+2.1%</span>
+                    </div>
+                    <div class="kpi-sparkline" id="sparkline2"></div>
+                </div>
+                
+                <div class="kpi-card">
+                    <div class="kpi-header">
+                        <h3>Energy Usage</h3>
+                        <i class="fas fa-bolt kpi-icon"></i>
+                    </div>
+                    <div class="kpi-value">
+                        <span class="kpi-number">1,234</span>
+                        <span class="kpi-unit">kWh</span>
+                    </div>
+                    <div class="kpi-trend negative">
+                        <i class="fas fa-arrow-down"></i>
+                        <span>-5.3%</span>
+                    </div>
+                    <div class="kpi-sparkline" id="sparkline3"></div>
+                </div>
+                
+                <div class="kpi-card">
+                    <div class="kpi-header">
+                        <h3>Safety Score</h3>
+                        <i class="fas fa-shield-alt kpi-icon"></i>
+                    </div>
+                    <div class="kpi-value">
+                        <span class="kpi-number">98.7</span>
+                        <span class="kpi-unit">%</span>
+                    </div>
+                    <div class="kpi-trend positive">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>+0.8%</span>
+                    </div>
+                    <div class="kpi-sparkline" id="sparkline4"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Charts Section -->
+        <section class="charts-section">
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <div class="card-header">
+                        <h3>Production Trends</h3>
+                        <div class="card-actions">
+                            <button class="btn-icon"><i class="fas fa-download"></i></button>
+                            <button class="btn-icon"><i class="fas fa-expand"></i></button>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="productionChart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="chart-card">
+                    <div class="card-header">
+                        <h3>Equipment Status</h3>
+                        <div class="card-actions">
+                            <button class="btn-icon"><i class="fas fa-download"></i></button>
+                            <button class="btn-icon"><i class="fas fa-expand"></i></button>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="equipmentChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Status and Alerts -->
+        <section class="status-section">
+            <div class="status-grid">
+                <div class="status-card">
+                    <div class="card-header">
+                        <h3>System Status</h3>
+                        <span class="status-indicator online">Online</span>
+                    </div>
+                    <div class="status-list">
+                        <div class="status-item">
+                            <div class="status-dot online"></div>
+                            <span>Production Line A</span>
+                            <span class="status-value">Running</span>
+                        </div>
+                        <div class="status-item">
+                            <div class="status-dot online"></div>
+                            <span>Production Line B</span>
+                            <span class="status-value">Running</span>
+                        </div>
+                        <div class="status-item">
+                            <div class="status-dot warning"></div>
+                            <span>Conveyor Belt 3</span>
+                            <span class="status-value">Maintenance</span>
+                        </div>
+                        <div class="status-item">
+                            <div class="status-dot offline"></div>
+                            <span>Quality Control Station</span>
+                            <span class="status-value">Offline</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="alerts-card">
+                    <div class="card-header">
+                        <h3>Recent Alerts</h3>
+                        <button class="btn-text">View All</button>
+                    </div>
+                    <div class="alerts-list">
+                        <div class="alert-item high">
+                            <div class="alert-icon">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </div>
+                            <div class="alert-content">
+                                <h4>Temperature Warning</h4>
+                                <p>Furnace 2 temperature exceeding threshold</p>
+                                <span class="alert-time">2 minutes ago</span>
+                            </div>
+                        </div>
+                        <div class="alert-item medium">
+                            <div class="alert-icon">
+                                <i class="fas fa-info-circle"></i>
+                            </div>
+                            <div class="alert-content">
+                                <h4>Maintenance Scheduled</h4>
+                                <p>Routine maintenance for Line A tomorrow</p>
+                                <span class="alert-time">1 hour ago</span>
+                            </div>
+                        </div>
+                        <div class="alert-item low">
+                            <div class="alert-icon">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div class="alert-content">
+                                <h4>Quality Check Passed</h4>
+                                <p>Batch #2847 passed all quality tests</p>
+                                <span class="alert-time">3 hours ago</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Data Table -->
+        <section class="table-section">
+            <div class="table-card">
+                <div class="card-header">
+                    <h3>Recent Production Batches</h3>
+                    <div class="table-controls">
+                        <div class="search-box">
+                            <input type="text" placeholder="Search batches..." id="tableSearch">
+                            <i class="fas fa-search"></i>
+                        </div>
+                        <button class="btn-primary">
+                            <i class="fas fa-plus"></i>
+                            New Batch
+                        </button>
+                    </div>
+                </div>
+                <div class="table-container">
+                    <table class="data-table" id="productionTable">
+                        <thead>
+                            <tr>
+                                <th>Batch ID</th>
+                                <th>Product</th>
+                                <th>Quantity</th>
+                                <th>Status</th>
+                                <th>Quality Score</th>
+                                <th>Completion Time</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>#B2847</td>
+                                <td>Steel Pipes</td>
+                                <td>250 units</td>
+                                <td><span class="status-badge completed">Completed</span></td>
+                                <td>98.5%</td>
+                                <td>2h 15m</td>
+                                <td>
+                                    <button class="btn-icon"><i class="fas fa-eye"></i></button>
+                                    <button class="btn-icon"><i class="fas fa-download"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#B2846</td>
+                                <td>Metal Sheets</td>
+                                <td>180 units</td>
+                                <td><span class="status-badge in-progress">In Progress</span></td>
+                                <td>-</td>
+                                <td>1h 42m</td>
+                                <td>
+                                    <button class="btn-icon"><i class="fas fa-eye"></i></button>
+                                    <button class="btn-icon"><i class="fas fa-pause"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#B2845</td>
+                                <td>Aluminum Rods</td>
+                                <td>320 units</td>
+                                <td><span class="status-badge completed">Completed</span></td>
+                                <td>97.2%</td>
+                                <td>3h 8m</td>
+                                <td>
+                                    <button class="btn-icon"><i class="fas fa-eye"></i></button>
+                                    <button class="btn-icon"><i class="fas fa-download"></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="table-pagination">
+                    <span class="pagination-info">Showing 1-3 of 47 results</span>
+                    <div class="pagination-controls">
+                        <button class="btn-pagination" disabled><i class="fas fa-chevron-left"></i></button>
+                        <button class="btn-pagination active">1</button>
+                        <button class="btn-pagination">2</button>
+                        <button class="btn-pagination">3</button>
+                        <button class="btn-pagination"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Notification Dropdown -->
+    <div class="notification-dropdown" id="notificationDropdown">
+        <div class="notification-header">
+            <h3>Notifications</h3>
+            <button class="btn-text">Mark all read</button>
+        </div>
+        <div class="notification-list">
+            <div class="notification-item unread">
+                <div class="notification-icon high">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div class="notification-content">
+                    <h4>Critical Alert</h4>
+                    <p>Temperature threshold exceeded in Furnace 2</p>
+                    <span class="notification-time">2 minutes ago</span>
+                </div>
+            </div>
+            <div class="notification-item unread">
+                <div class="notification-icon medium">
+                    <i class="fas fa-wrench"></i>
+                </div>
+                <div class="notification-content">
+                    <h4>Maintenance Required</h4>
+                    <p>Conveyor Belt 3 requires scheduled maintenance</p>
+                    <span class="notification-time">15 minutes ago</span>
+                </div>
+            </div>
+            <div class="notification-item">
+                <div class="notification-icon low">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="notification-content">
+                    <h4>Production Complete</h4>
+                    <p>Batch #2847 completed successfully</p>
+                    <span class="notification-time">1 hour ago</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for detailed views -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Batch Details</h3>
+                <button class="modal-close" id="modalClose">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-content">
+                <div class="modal-section">
+                    <h4>Production Information</h4>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <label>Batch ID:</label>
+                            <span>#B2847</span>
+                        </div>
+                        <div class="info-item">
+                            <label>Product Type:</label>
+                            <span>Steel Pipes</span>
+                        </div>
+                        <div class="info-item">
+                            <label>Quantity:</label>
+                            <span>250 units</span>
+                        </div>
+                        <div class="info-item">
+                            <label>Quality Score:</label>
+                            <span>98.5%</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-section">
+                    <h4>Timeline</h4>
+                    <div class="timeline">
+                        <div class="timeline-item completed">
+                            <div class="timeline-marker"></div>
+                            <div class="timeline-content">
+                                <h5>Production Started</h5>
+                                <span>08:30 AM</span>
+                            </div>
+                        </div>
+                        <div class="timeline-item completed">
+                            <div class="timeline-marker"></div>
+                            <div class="timeline-content">
+                                <h5>Quality Check</h5>
+                                <span>10:15 AM</span>
+                            </div>
+                        </div>
+                        <div class="timeline-item completed">
+                            <div class="timeline-marker"></div>
+                            <div class="timeline-content">
+                                <h5>Production Completed</h5>
+                                <span>10:45 AM</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary">Download Report</button>
+                <button class="btn-primary">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
